@@ -1,0 +1,33 @@
+class MemoryManager {
+    constructor(){
+        this.score = this.get("score");
+        this.bestScore = this.get("best-score");
+
+        this.combo = this.get("combo");
+        this.failures = this.get("failures");
+
+        this.tileGrid = this.get("tile-grid");
+
+        this.currentValue = this.get("current-value");
+        this.nextValue = this.get("next-value");
+    }
+    save(key, value){
+        if (value === undefined) return;
+        
+        localStorage.setItem(key, JSON.stringify(value));
+    }
+    get(key){
+       const raw = localStorage.getItem(key);
+
+       if (raw === null) return null;
+
+        try {
+            return JSON.parse(raw);
+        } catch (e) {
+            return null;
+        }
+    }
+    clear(){
+        localStorage.clear();
+    }
+}
