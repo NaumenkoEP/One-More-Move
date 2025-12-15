@@ -56,13 +56,30 @@ body {
     align-items: center;
 }
 
+.header{
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: space-between;
+}
+.high-score-container{
+    display: flex;
+    flex-flow: row nowrap;
+    font-size: 40px;
+    color: #6E6E73;
+}
+.crown-icon{
+    width: 50px;
+}
+.settings-icon{
+    width: 60px;
+}
+
 
 .canvas {
     display: flex;
     flex-flow: column nowrap;
     align-items: center;
-    gap: 3vh;
-
 }
 .game-canvas {
     background-color: var(--pastel-board-border); 
@@ -74,4 +91,5 @@ body {
     background-color: var(--pastel-bg); 
     border: 1px solid var(--pastel-bg);
     border-radius: 5px;
+    margin-top: 2vh;
 }

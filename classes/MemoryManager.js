@@ -2,6 +2,7 @@ class MemoryManager {
     constructor(){
         this.score = this.get("score");
         this.bestScore = this.get("best-score");
+        this.isBestScoreAdding = this.get("is-best-score-adding");
 
         this.combo = this.get("combo");
         this.failures = this.get("failures");

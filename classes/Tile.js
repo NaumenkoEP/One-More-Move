@@ -325,7 +325,6 @@ class Tile {
         this.value = String(Number(this.value) + mergeCount);
 
         const score = Math.floor(Number(((this.value * 2) * mergeCount)) * board.comboFactor);
-        // const score = Math.floor( (Math.pow(Number(this.score), 2) * mergeCount) * board.comboFactor );
         board.addScore(score);
         board.updateCombo(mergeCount);
 

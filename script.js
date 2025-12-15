@@ -8,6 +8,9 @@ gameCanvas.width = size; gameCanvas.height = size;
 const tileCanvas = document.querySelector(".tile-canvas"); const tc = tileCanvas.getContext("2d");
 const scoreCanvas = document.querySelector(".score-canvas"); const sc = scoreCanvas.getContext("2d");
 
+const headerHTML = document.querySelector(".game-borders .header");
+window.addEventListener("load", () => {headerHTML.style.width = size + "px"});
+
 const storage = new MemoryManager(); const board = new BoardManager();
 
 const initNewGame = () => {
@@ -19,9 +22,9 @@ const initNewGame = () => {
 
 // storage.clear()
 
-// add best score logic + UI
+// finish best score logic, refine UI
+// fix the tile erasing bug in preview and on board
 // add several more colors for the tiles
 
-// add autograb option;
-// add watch add for tile menu + logic;
+// add settings logic + UI: autograb, watch ad for wildcard, start again, 
 // New Game / Game Over logic

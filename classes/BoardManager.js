@@ -23,16 +23,22 @@ class BoardManager {
 
         this.wildCardAnimationInterval;
 
-        this.scoreContainerHTML = document.querySelector('.score-container');
         this.score;
+        this.scoreContainerHTML = document.querySelector('.score-container');
         this.isAddingScore = true;
+
         this.maxFontSize = 50;
         this.minFontSize = 45;
         this.fontSize = this.maxFontSize;
+        
+        this.bestScore;
+        this.isBestScoreAdding;
+        this.bestScoreCounterHTML = document.querySelector('.high-score-counter');
+        this.bestScoreIconHTML = document.querySelector(".crown-icon");
+        this.bestScoreAddingColor = "#D9B07A"
 
         this.pulseStartTime = performance.now();
         this.pulsePhaseOffset = 0;
-
 
         this.combo;
         this.allowedFailure = 3;
@@ -126,6 +132,19 @@ class BoardManager {
         } else {
             this.score = 0;
             this.renderScore(0, this.fontSize);
+        }
+
+        const bestScore = storage.bestScore;
+        if(bestScore !== null) this.bestScore = bestScore;
+        else this.bestScore = 0;
+        this.bestScoreCounterHTML.innerHTML = this.bestScore;
+
+        const isBestScoreAdding = storage.isBestScoreAdding;
+        if(isBestScoreAdding !== null) this.isBestScoreAdding = isBestScoreAdding;
+        else this.isBestScoreAdding = false;
+        if(this.isBestScoreAdding){
+            this.bestScoreCounterHTML.style.color = this.bestScoreAddingColor;
+            this.bestScoreIconHTML.src = "assets/crown-icon-new.png";
         }
 
         const combo = storage.combo;
@@ -284,19 +303,58 @@ class BoardManager {
 
     addScore(amount) {
         this.isAddingScore = true;
-
+        
         const start = this.score;
         const end = this.score + amount;
+
+        if(end >= this.bestScore) {
+            this.isBestScoreAdding = true;
+            storage.save("is-best-score-adding", this.isBestScoreAdding);
+            
+            this.bestScore = end;
+            storage.save("best-score", this.bestScore);
+            
+            this.bestScoreCounterHTML.style.color = this.bestScoreAddingColor;
+            this.bestScoreCounterHTML.innerHTML = this.bestScore;
+            this.bestScoreIconHTML.src = "assets/crown-icon-new.png";
+
+            if (amount <= 5) {
+                this.bestScoreCounterHTML.innerHTML = end;
+            } else {
+                const duration = 600;
+                const startTime = performance.now();
+    
+                const animate = (now) => {
+                    const progress = Math.min(1, (now - startTime) / duration);
+                    const eased = progress * (2 - progress);
+    
+                    const currentShown = Math.floor(start + (end - start) * eased);
+                    this.bestScoreCounterHTML.innerHTML = currentShown;
+            
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        this.bestScoreCounterHTML.innerHTML = end;
+    
+                        this.pulseStartTime = performance.now();
+                        this.pulsePhaseOffset = Math.PI / 2;
+                    }
+    
+                };
+                
+                requestAnimationFrame(animate);
+            }
+        }
 
         // Small value? → snap instantly or short animate
         if (amount <= 5) {
             sc.fillStyle = this.bgColor;
             sc.fillRect(0, 0, size, this.tileSize);
-
+            
             this.score = end;
             storage.save("score", this.score);
             this.renderScore(end, this.fontSize);
-
+            
             this.isAddingScore = false;
             return;
         }
@@ -329,6 +387,8 @@ class BoardManager {
         };
         
         requestAnimationFrame(animate);
+
+        // handle the best score logic
     }
     scorePulseAnmiation() {
         const center = (this.maxFontSize + this.minFontSize) / 2;
@@ -371,7 +431,7 @@ class BoardManager {
         sc.textAlign = "center";      
         sc.textBaseline = "middle"; 
 
-        sc.fillStyle = "rgba(0, 0, 0, 0.75)";
+        sc.fillStyle = "black"; // Alternative: "#6E6E73"
         sc.fillText(value, size / 2, this.tileSize - 25);
     }
     renderComboCircle(){
