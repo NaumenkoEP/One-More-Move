@@ -79,21 +79,51 @@ class Tile {
     static getColor(value){
         let color;
         switch(value) {
-            case "1": color = "#DCE6F2"; break;
-            case "2": color = "#BFD7EA"; break;
-            case "3": color = "#99C1DE"; break;
-            case "4": color = "#F6E3C5"; break;
-            case "5": color = "#F5C396"; break;
-            case "6": color = "#F29E85"; break;
-            case "7": color = "#FF8080"; break;
-            case "8": color = "#FF5757"; break;
-            case "9": color = "#FF3B3B"; break;
-            case "10": color = "#E00000"; break;
-            case "?": color = "#FF5757"; break;
-            default: color = "#E00000";
+
+            // Cool / Early (Blue)
+            case "1":  color = "#DCE6F2"; break;
+            case "2":  color = "#BFD7EA"; break;
+            case "3":  color = "#99C1DE"; break;
+
+            // Warm / Mid (Cream / Peach)
+            case "4":  color = "#F6E3C5"; break;
+            case "5":  color = "#F5C396"; break;
+            case "6":  color = "#F29E85"; break;
+
+            // Red escalation (Bright / energetic)
+            case "7":  color = "#FF8A8A"; break;
+            case "8":  color = "#FF5F5F"; break;
+            case "9":  color = "#FF3D3D"; break;
+
+            // Purple accent (new phase)
+            case "10": color = "#E4DCFF"; break;
+            case "11": color = "#C2B2FF"; break;
+            case "12": color = "#9D84FF"; break;
+
+            // Teal / Mint (clarity & relief)
+            case "13": color = "#D6F4EE"; break;
+            case "14": color = "#9FE6D6"; break;
+            case "15": color = "#4FC9B0"; break;
+
+            // Gold / Amber (reward tier — no cream overlap)
+            case "16": color = "#FFE29A"; break;
+            case "17": color = "#FFC857"; break;
+            case "18": color = "#F4A300"; break;
+
+            // Obsidian (endgame, no bright red overlap)
+            case "19": color = "#2F3A56"; break;
+            case "20": color = "#1F2A44"; break;
+            case "21": color = "#0E1628"; break;
+
+            // Special
+            case "?":  color = "#FFC857"; break;
+
+            default: color = "#0E1628";
         }
         return color;
     }
+
+
 
     draw(drawNumber){
         this.ctx.beginPath();
@@ -106,8 +136,9 @@ class Tile {
             this.ctx.font = `47px ${this.fontFamily}`;
             this.ctx.textAlign = "center";      
             this.ctx.textBaseline = "middle"; 
-    
-            this.ctx.fillStyle = "black";
+            
+            if(Number(this.value) >= 19) this.ctx.fillStyle = "#F1F5FF"
+            else this.ctx.fillStyle = "black";
             this.ctx.fillText(
                 this.value,
                 this.x + this.width / 2,

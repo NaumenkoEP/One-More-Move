@@ -28,9 +28,8 @@ const gameOver = () => {
 
 // storage.clear()
 
-// finish best score logic, refine UI
-// fix the tile erasing bug in preview and on board
 // add several more colors for the tiles
+// make a second UI version of scores placements
 
 // add settings logic + UI: autograb, watch ad for wildcard, start again, 
 // New Game / Game Over logic + UI
