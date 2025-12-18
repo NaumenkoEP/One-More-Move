@@ -73,8 +73,12 @@ body {
 }
 .settings-icon{
     width: 60px;
+    transition: 0.1s;
 }
-
+.settings-icon:hover{
+    cursor: pointer;
+    transform: scale(1.1);
+}
 
 .canvas {
     display: flex;

@@ -186,8 +186,8 @@ class Tile {
         };
 
         requestAnimationFrame(animate);
-    }
 
+    }
     display(){
         if(this.value !== "?") this.draw(true);
         else this.wildCardAnimation();
@@ -201,6 +201,10 @@ class Tile {
             y <= this.y + this.height
         );
     }
+    destroy() {
+        tileCanvas.removeEventListener("click", this._grabListener);
+        gameCanvas.removeEventListener("click", this._dropListener);
+    }
 
     grab(){
         for (let row of board.holderGrid) {
@@ -210,7 +214,6 @@ class Tile {
         }
         tileCanvas.removeEventListener("click", this._grabListener);
         gameCanvas.addEventListener("click", this._dropListener);
-        
     }
     drop(){
         this.dropped = true;
@@ -243,10 +246,7 @@ class Tile {
             }
         } 
 
-        setTimeout(()=> {
-            board.displayTiles();
-        }, 200)
-
+        setTimeout(()=> {board.displayTiles()}, 200);
     }
 
     checkForMerge() {
@@ -291,7 +291,11 @@ class Tile {
         }
 
         // Save progress to storage
-        const nonCircularValues = [[], [], [], [], []];
+        const nonCircularValues = Array.from(
+            { length: board.dimentions },
+            () => Array(board.dimentions).fill(0)
+        );
+
         for(let row = 0; row < board.dimentions; row++){
             for(let col = 0; col < board.dimentions; col++){
                 const item = board.tileGrid[row][col]
@@ -302,10 +306,13 @@ class Tile {
         storage.save("tile-grid", nonCircularValues);
         
         if (mergeCount === 0) { 
+
             board.failures++;
             storage.save("failures", board.failures);
             
             if (board.failures > 3) board.nulifyCombo();
+
+            if(board.getEmptyCells() < 1) gameOver();
             
             return;
         }

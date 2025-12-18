@@ -6,16 +6,17 @@ class BoardManager {
         this.dimentions = 5;
         this.borderWidth = 5;
 
-        this.holderGrid = []
-        this.holderId = 0;
+        this.holderGrid;
+        this.holderId;
         
         this.tileBorderRadius = 5;
         this.tileSize = (this.width - (this.dimentions + 1) * this.borderWidth) / this.dimentions;
 
-        this.tileGrid = [[], [], [], [], []];
+        this.tileGrid;
 
         this.currentValue;
         this.nextValue;
+        this.previewTile = null;
         
         this.fontFamily = 'Sans-Serif';
         this.previewTileSize = 25;
@@ -112,7 +113,15 @@ class BoardManager {
             }
         }
     }
+
     initialise(){
+        this.tileGrid = Array.from({ length: this.dimentions }, () =>
+            Array(this.dimentions).fill(0)
+        );
+
+        this.holderGrid = [];
+        this.holderId = 0;
+
         this.initHolderGrid();
         this.initTileGrid(); 
 
@@ -123,6 +132,9 @@ class BoardManager {
         const nextValue = storage.nextValue;
         if(nextValue !== null) this.nextValue = String(nextValue);
         else this.nextValue = "1";
+
+        this.createPreviewTile(this.currentValue);
+        this.displayNextTile(this.nextValue);
 
         const savedScore = storage.score;
         if (savedScore !== null && savedScore > 0) {
@@ -156,11 +168,55 @@ class BoardManager {
         else this.failures = 0;
 
 
-        new Tile(this.currentValue, tileCanvas.width / 2 - this.tileSize / 2, this.previewTileSize / 2, tc)
-        this.displayNextTile(this.nextValue);
-
         this.scorePulseAnmiation();
     }
+    reset() {
+        for(let row = 0; row < this.dimentions; row++){
+            for(let col = 0; col < this.dimentions; col++){
+                const tile = this.tileGrid[row][col];
+                if(tile !== 0) this.tileGrid[row][col].destroy();
+            }
+        }
+        const consumables = [
+            "score",
+            "is-best-score-adding",
+            "combo",
+            "failures",
+            "tile-grid",
+            "current-value",
+            "next-value"
+        ];
+        for(let i = 0; i < consumables.length; i++){
+            storage.nullify(consumables[i]);
+        }
+
+        this.tileGrid = Array.from({ length: this.dimentions }, () =>
+            Array(this.dimentions).fill(0)
+        );
+
+        this.holderGrid = [];
+        this.holderId = 0;
+        this.initHolderGrid();
+
+        this.currentValue = "1";
+        this.nextValue = "1";
+
+        storage.save("current-value", this.currentValue);
+        storage.save("next-value", this.nextValue);
+
+        tc.clearRect(0, 0, tileCanvas.width, tileCanvas.height);
+
+        this.createPreviewTile(this.currentValue);
+        this.displayNextTile(String(this.nextValue));
+
+        this.combo = 0;
+        this.score = 0;
+        this.isBestScoreAdding = false;
+        this.bestScoreIconHTML.src = "assets/crown-icon.png";
+        this.bestScoreCounterHTML.style.color = "#6E6E73";
+        this.renderScore(0, this.fontSize);
+
+    } 
 
     getHighestValue(){
         const values = new Set();
@@ -191,50 +247,78 @@ class BoardManager {
         }
         return emptyCells;
     }
+
     getTileValue() {
         const highest = Math.max(1, this.getHighestValue());
         const empty = this.getEmptyCells();
         const size = this.dimentions * this.dimentions;
 
-        const fullness = 1 - empty / size;               // 0 → 1
+        const fullness = 1 - empty / size;   // 0 → 1
         const difficulty = Math.min(1,
             (highest / 10) * 0.6 +
             fullness * 0.4
         );
 
-    
-        const specialChance = 0.01 + difficulty * 0.02;  // 1% → 3%
-        const r = Math.random();
-        if (r < specialChance) return "?";        
-            
-    
-        // Base weights for tiles 1–7
+        // -----------------------------
+        // SPECIAL TILE (rare)
+        // -----------------------------
+        const specialChance = 0.01 + difficulty * 0.02; // 1% → 3%
+        if (Math.random() < specialChance) return "?";
+
+        // -----------------------------
+        // BASE DISTRIBUTION (1–7)
+        // -----------------------------
         let weights = [1, 0.9, 0.7, 0.45, 0.22, 0.12, 0.05];
 
-        // Adjust weights based on difficulty + highest
         weights = weights.map((w, i) => {
             const value = i + 1;
 
-            // Hard cap: don't spawn tiles too far above highest
+            // Never spawn far above progress
             if (value > highest + 2) return 0;
 
-            // Late game: reduce 1s and 2s
-            const lowPenalty = (value <= 2 ? fullness * 0.5 : 0);
+            // 🔽 Gradual decay of low tiles
+            let lowDecay = 1;
+            if (value <= 3) {
+                // Smooth curve: early game untouched, late game reduced
+                lowDecay = Math.max(
+                    0.15,
+                    1 - difficulty * 0.85
+                );
+            }
 
-            // Boost higher tiles slightly with difficulty
+            // 🔼 Slight boost to mid/high tiles
             const diffBoost = difficulty * value * 0.02;
 
-            return Math.max(0, w - lowPenalty + diffBoost);
+            return Math.max(0, w * lowDecay + diffBoost);
         });
 
-        // If ALL weights are zero → fallback safe distribution
+        // -----------------------------
+        // HIDDEN MERCY SYSTEM
+        // -----------------------------
+        // Trigger only when board is tight AND player is strong
+        if (empty <= 2 && highest >= 7) {
+            weights = weights.map((w, i) => {
+                const value = i + 1;
+
+                // Mercy favors tiles that are actually mergeable
+                if (value <= highest) return w * 1.6;
+
+                return w;
+            });
+        }
+
+        // -----------------------------
+        // SAFETY NET
+        // -----------------------------
         let total = weights.reduce((a, b) => a + b, 0);
         if (total <= 0 || !isFinite(total)) {
             weights = [1, 0.8, 0.5, 0.3, 0.12, 0.06, 0.03];
             total = weights.reduce((a, b) => a + b, 0);
         }
 
-        // Normalize selection
+        // -----------------------------
+        // RANDOM PICK
+        // -----------------------------
         let p = Math.random() * total;
 
         for (let i = 0; i < weights.length; i++) {
@@ -242,16 +326,32 @@ class BoardManager {
             p -= weights[i];
         }
 
-        return 1; // fallback safety
+        console.log("absolute fallback")
+        return 1; // absolute fallback
     }
-    
+
+
+
+    createPreviewTile(value) {
+        if (this.previewTile) {
+            this.previewTile.destroy();
+            this.previewTile = null;
+        }
+
+        this.previewTile = new Tile(
+            String(value),
+            tileCanvas.width / 2 - this.tileSize / 2,
+            this.previewTileSize / 2,
+            tc
+        );
+    }
     displayTiles(){
         this.currentValue = this.nextValue;
         storage.save("current-value", this.currentValue);
          
         clearInterval(this.wildCardAnimationInterval);
 
-        new Tile(this.currentValue, tileCanvas.width / 2 - this.tileSize / 2, this.previewTileSize / 2, tc)
+        this.createPreviewTile(this.currentValue);
 
         this.nextValue = String(this.getTileValue());
         storage.save("next-value", this.nextValue);
@@ -416,14 +516,12 @@ class BoardManager {
 
         requestAnimationFrame(animate);
     }
-
-
     renderScore(value, fontSize){
 
         sc.fillStyle = this.bgColor;
         sc.fillRect(0, 0, size, this.tileSize + 20);
 
-        if(board.combo > 1) this.renderComboCircle();
+        if(this.combo > 1) this.renderComboCircle();
 
         sc.beginPath();
 
@@ -463,7 +561,6 @@ class BoardManager {
         sc.arc(x, y, radius, 0, Math.PI * 2, false);
         sc.fill();
     }
-    
     updateCombo(comboCount){
         this.combo += comboCount
 
@@ -519,3 +616,61 @@ class BoardManager {
         }
     }
 }
+
+
+
+
+
+ // getTileValue() {
+    //     const highest = Math.max(1, this.getHighestValue());
+    //     const empty = this.getEmptyCells();
+    //     const size = this.dimentions * this.dimentions;
+
+    //     const fullness = 1 - empty / size;               // 0 → 1
+    //     const difficulty = Math.min(1,
+    //         (highest / 10) * 0.6 +
+    //         fullness * 0.4
+    //     );
+
+    
+    //     const specialChance = 0.01 + difficulty * 0.02;  // 1% → 3%
+    //     const r = Math.random();
+    //     if (r < specialChance) return "?";        
+            
+    
+    //     // Base weights for tiles 1–7
+    //     let weights = [1, 0.9, 0.7, 0.45, 0.22, 0.12, 0.05];
+
+    //     // Adjust weights based on difficulty + highest
+    //     weights = weights.map((w, i) => {
+    //         const value = i + 1;
+
+    //         // Hard cap: don't spawn tiles too far above highest
+    //         if (value > highest + 2) return 0;
+
+    //         // Late game: reduce 1s and 2s
+    //         const lowPenalty = (value <= 2 ? fullness * 0.5 : 0);
+
+    //         // Boost higher tiles slightly with difficulty
+    //         const diffBoost = difficulty * value * 0.02;
+
+    //         return Math.max(0, w - lowPenalty + diffBoost);
+    //     });
+
+    //     // If ALL weights are zero → fallback safe distribution
+    //     let total = weights.reduce((a, b) => a + b, 0);
+    //     if (total <= 0 || !isFinite(total)) {
+    //         weights = [1, 0.8, 0.5, 0.3, 0.12, 0.06, 0.03];
+    //         total = weights.reduce((a, b) => a + b, 0);
+    //     }
+
+    //     // Normalize selection
+    //     let p = Math.random() * total;
+
+    //     for (let i = 0; i < weights.length; i++) {
+    //         if (p < weights[i]) return i + 1;
+    //         p -= weights[i];
+    //     }
+
+    //     return 1; // fallback safety
+    // }

@@ -20,6 +20,12 @@ const initNewGame = () => {
     board.initialise();
 }; initNewGame();
 
+
+const gameOver = () => {
+    console.log("game over!")
+}
+
+
 // storage.clear()
 
 // finish best score logic, refine UI
@@ -27,4 +33,6 @@ const initNewGame = () => {
 // add several more colors for the tiles
 
 // add settings logic + UI: autograb, watch ad for wildcard, start again, 
-// New Game / Game Over logic
+// New Game / Game Over logic + UI
+
+window.document.addEventListener('keydown', (e) => {if(e.key === 'q') board.reset()});

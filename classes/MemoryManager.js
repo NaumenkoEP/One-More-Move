@@ -28,6 +28,11 @@ class MemoryManager {
             return null;
         }
     }
+    nullify(key){
+        if (key === undefined) return;
+
+        localStorage.removeItem(key);
+    }
     clear(){
         localStorage.clear();
     }
