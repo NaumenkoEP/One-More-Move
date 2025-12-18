@@ -33,9 +33,8 @@ class Tile {
                 this.grab();
             }
         }; 
-        if (this.ctx === tc) {
-            tileCanvas.addEventListener("click", this._grabListener);
-        }
+        if (this.ctx === tc) tileCanvas.addEventListener("click", this._grabListener);
+        
 
         this.hoveredHolder;
         this._dropListener = (e) => {
@@ -90,7 +89,7 @@ class Tile {
             case "8": color = "#FF5757"; break;
             case "9": color = "#FF3B3B"; break;
             case "10": color = "#E00000"; break;
-            case "?": color = "yellow"; break;
+            case "?": color = "#FF5757"; break;
             default: color = "#E00000";
         }
         return color;
@@ -131,8 +130,7 @@ class Tile {
 
         this.wildCardAnimationInterval = setInterval(() => {
             if(!this.dropped){
-                tc.fillStyle = board.bgColor;
-                tc.fillRect(this.x, this.y, this.width, this.height);
+                tc.clearRect(tileCanvas.width / 2 - board.tileSize / 2 - 1, board.previewTileSize / 2 - 1, board.tileSize + 2, board.tileSize + 2);
 
                 this.ctx = tc;
                 const displayValue = String(values[counter]);
@@ -232,21 +230,19 @@ class Tile {
         gameCanvas.removeEventListener("click", this._dropListener);
         tileCanvas.removeEventListener("click", this._grabListener);
 
-        tc.fillStyle = board.bgColor;
-        tc.fillRect(tileCanvas.width / 2 - board.tileSize / 2 - 1, board.previewTileSize / 2 - 1, board.tileSize + 2, board.tileSize + 2);
+        // tc.fillStyle = "red";
+        // tc.fillRect(tileCanvas.width / 2 - board.tileSize / 2 - 1, board.previewTileSize / 2 - 1, board.tileSize + 2, board.tileSize + 2);
+
+        tc.clearRect(tileCanvas.width / 2 - board.tileSize / 2 - 1, board.previewTileSize / 2 - 1, board.tileSize + 2, board.tileSize + 2);
 
         board.addScore(Number(this.value));
 
         this.appearAnimation();
         this.checkForMerge();
 
-        for (let row of board.holderGrid) {
-            for (let holder of row) {
-                if(holder.empty) holder.draw();
-            }
-        } 
-
-        setTimeout(()=> {board.displayTiles()}, 200);
+        for (let row of board.holderGrid) for (let holder of row) if(holder.empty) holder.draw();
+        
+        setTimeout(() => {board.displayTiles()}, 200);
     }
 
     checkForMerge() {

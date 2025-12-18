@@ -247,89 +247,92 @@ class BoardManager {
         }
         return emptyCells;
     }
+    // getTileValue() {        
+    //     const highest = Math.max(1, this.getHighestValue());
+    //     const empty = this.getEmptyCells();
+    //     const size = this.dimentions * this.dimentions;
 
-    getTileValue() {
-        const highest = Math.max(1, this.getHighestValue());
-        const empty = this.getEmptyCells();
-        const size = this.dimentions * this.dimentions;
+    //     const fullness = 1 - empty / size;   // 0 → 1
+    //     const difficulty = Math.min(1,
+    //         (highest / 10) * 0.6 +
+    //         fullness * 0.4
+    //     );
 
-        const fullness = 1 - empty / size;   // 0 → 1
-        const difficulty = Math.min(1,
-            (highest / 10) * 0.6 +
-            fullness * 0.4
-        );
+    //     // -----------------------------
+    //     // SPECIAL TILE (rare)
+    //     // -----------------------------
+    //     const specialChance = 0.01 + difficulty * 0.02; // 1% → 3%
+    //     if (Math.random() < specialChance) return "?";
 
-        // -----------------------------
-        // SPECIAL TILE (rare)
-        // -----------------------------
-        const specialChance = 0.01 + difficulty * 0.02; // 1% → 3%
-        if (Math.random() < specialChance) return "?";
+    //     // -----------------------------
+    //     // BASE DISTRIBUTION (1–7)
+    //     // -----------------------------
+    //     let weights = [1, 0.9, 0.7, 0.45, 0.22, 0.12, 0.05];
 
-        // -----------------------------
-        // BASE DISTRIBUTION (1–7)
-        // -----------------------------
-        let weights = [1, 0.9, 0.7, 0.45, 0.22, 0.12, 0.05];
+    //     weights = weights.map((w, i) => {
+    //         const value = i + 1;
 
-        weights = weights.map((w, i) => {
-            const value = i + 1;
+    //         // Never spawn far above progress
+    //         if (value > highest + 2) return 0;
 
-            // Never spawn far above progress
-            if (value > highest + 2) return 0;
+    //         // 🔽 Gradual decay of low tiles
+    //         let lowDecay = 1;
+    //         if (value <= 3) {
+    //             // Smooth curve: early game untouched, late game reduced
+    //             lowDecay = Math.max(
+    //                 0.15,
+    //                 1 - difficulty * 0.85
+    //             );
+    //         }
 
-            // 🔽 Gradual decay of low tiles
-            let lowDecay = 1;
-            if (value <= 3) {
-                // Smooth curve: early game untouched, late game reduced
-                lowDecay = Math.max(
-                    0.15,
-                    1 - difficulty * 0.85
-                );
-            }
+    //         // 🔼 Slight boost to mid/high tiles
+    //         const diffBoost = difficulty * value * 0.02;
 
-            // 🔼 Slight boost to mid/high tiles
-            const diffBoost = difficulty * value * 0.02;
+    //         return Math.max(0, w * lowDecay + diffBoost);
+    //     });
 
-            return Math.max(0, w * lowDecay + diffBoost);
-        });
+    //     // -----------------------------
+    //     // HIDDEN MERCY SYSTEM
+    //     // -----------------------------
+    //     // Trigger only when board is tight AND player is strong
+    //     if (empty <= 2 && highest >= 7) {
+    //         weights = weights.map((w, i) => {
+    //             const value = i + 1;
 
-        // -----------------------------
-        // HIDDEN MERCY SYSTEM
-        // -----------------------------
-        // Trigger only when board is tight AND player is strong
-        if (empty <= 2 && highest >= 7) {
-            weights = weights.map((w, i) => {
-                const value = i + 1;
+    //             // Mercy favors tiles that are actually mergeable
+    //             if (value <= highest) return w * 1.6;
 
-                // Mercy favors tiles that are actually mergeable
-                if (value <= highest) return w * 1.6;
+    //             return w;
+    //         });
+    //     }
 
-                return w;
-            });
-        }
+    //     // -----------------------------
+    //     // SAFETY NET
+    //     // -----------------------------
+    //     let total = weights.reduce((a, b) => a + b, 0);
+    //     if (total <= 0 || !isFinite(total)) {
+    //         weights = [1, 0.8, 0.5, 0.3, 0.12, 0.06, 0.03];
+    //         total = weights.reduce((a, b) => a + b, 0);
+    //     }
 
-        // -----------------------------
-        // SAFETY NET
-        // -----------------------------
-        let total = weights.reduce((a, b) => a + b, 0);
-        if (total <= 0 || !isFinite(total)) {
-            weights = [1, 0.8, 0.5, 0.3, 0.12, 0.06, 0.03];
-            total = weights.reduce((a, b) => a + b, 0);
-        }
+    //     // -----------------------------
+    //     // RANDOM PICK
+    //     // -----------------------------
+    //     let p = Math.random() * total;
 
-        // -----------------------------
-        // RANDOM PICK
-        // -----------------------------
-        let p = Math.random() * total;
+    //     for (let i = 0; i < weights.length; i++) {
+    //         if (p < weights[i]) return i + 1;
+    //         p -= weights[i];
+    //     }
 
-        for (let i = 0; i < weights.length; i++) {
-            if (p < weights[i]) return i + 1;
-            p -= weights[i];
-        }
-
-        console.log("absolute fallback")
-        return 1; // absolute fallback
+    //     console.log("absolute fallback")
+    //     return 1; // absolute fallback
+    // }
+    getTileValue(){
+        const n = Math.random();
+        if(n < 0.5) return "6";
+        else return "7";
     }
-
 
 
     createPreviewTile(value) {
@@ -363,7 +366,9 @@ class BoardManager {
         const tileSize = this.previewTileSize;
         const tileRad = 2;
         const fontSize = this.previewTileSize / 2;
-       
+
+        tc.clearRect(tileX, tileY, tileSize, tileSize);
+
         tc.fillStyle = Tile.getColor(value);
         tc.beginPath();
         tc.roundRect(tileX, tileY, tileSize, tileSize, tileRad);
@@ -380,8 +385,7 @@ class BoardManager {
             const values = [1, 2, 3, 4, 5, 6, 7, 8];
 
             this.wildCardAnimationInterval = setInterval(() => {
-                tc.fillStyle = this.bgColor;
-                tc.fillRect(tileX, tileY, tileSize, tileSize);
+                tc.clearRect(tileX, tileY, tileSize, tileSize);
 
                 tc.fillStyle = Tile.getColor(String(values[counter]));
                 tc.beginPath();
@@ -592,12 +596,23 @@ class BoardManager {
             this.empty = true;
         }
 
-        draw(){
+        draw() {
+            // FULL HARD CLEAR (square)
+            gc.clearRect(this.x - 1, this.y - 1, this.width + 2, this.height + 2);
+
+            // THEN draw rounded holder
             gc.fillStyle = this.color;
             gc.beginPath();
-            gc.roundRect(this.x, this.y, this.width, this.height, this.parent.tileBorderRadius);
+            gc.roundRect(
+                this.x,
+                this.y,
+                this.width,
+                this.height,
+                this.parent.tileBorderRadius
+            );
             gc.fill();
         }
+
 
         contains(x, y) {
             return (
