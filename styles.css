@@ -83,8 +83,8 @@ body {
     animation: rotateSettingsButton 1s ease;
 }
 @keyframes rotateSettingsButton {
-    from {transform: rotate(0deg) scale(1)}
-    to {transform: rotate(180deg) scale(1.1)}
+    from {transform: rotate(0deg)}
+    to {transform: rotate(270deg)}
 }
 
 
