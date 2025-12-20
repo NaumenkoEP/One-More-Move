@@ -75,14 +75,18 @@ body {
     width: 50px;
 }
 .settings-icon{
-    width: 60px;
+    width: 40px;
     transition: 0.1s;
 }
 .settings-icon:hover{
     cursor: pointer;
-    transform: scale(1.1);
-}
+    animation: rotateSettingsButton 1s ease;
 
+}
+@keyframes rotateSettingsButton {
+    from {transform: rotate(0deg) scale(1)};
+    to {transform: rotate(180deg) scale(1.1)};
+}
 
 
 
@@ -107,7 +111,7 @@ body {
 
 
 .settings-window {
-    display: flex;
+    display: none;
     flex-flow: column nowrap;
     position: fixed;
     left: 50%;
