@@ -21,8 +21,7 @@ const initNewGame = () => {
 }; initNewGame();
 
 
-const gameOverContainerHTML = document.querySelector(".game-over-container");
-let isGameOver = false;
+const gameOverContainerHTML = document.querySelector(".game-over-container"); let isGameOver = false;
 const gameOver = () => {
     isGameOver = true;
 
@@ -39,9 +38,7 @@ const gameOver = () => {
 };
 
 const settingsWindowHTML = document.querySelector(".settings-window");
-const openSettings = () => settingsWindowHTML.style.display = "flex";
-
-const closeSettings = () => settingsWindowHTML.style.display = "none";
+const openSettings = () => settingsWindowHTML.style.display = "flex"; const closeSettings = () => settingsWindowHTML.style.display = "none";
 
 // add settings logic + UI: sound, autograb, watch ad for wildcard, start again, 
 
