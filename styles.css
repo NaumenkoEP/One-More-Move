@@ -38,7 +38,6 @@
     --clean-tile-10: #E00000;
 }
 
-
 body {
     background-color: var(--pastel-bg); /* ← Default theme */
     margin: 0;
@@ -54,7 +53,10 @@ body {
     display: flex;
     flex-flow: column nowrap;
     align-items: center;
+    position: relative;
 }
+
+
 
 .header{
     display: flex;
@@ -80,7 +82,10 @@ body {
     transform: scale(1.1);
 }
 
-.canvas {
+
+
+
+.canvas-container {
     display: flex;
     flex-flow: column nowrap;
     align-items: center;
@@ -93,7 +98,60 @@ body {
 }
 .tile-canvas {
     background-color: var(--pastel-bg); 
-    border: 1px solid var(--pastel-bg);
-    border-radius: 5px;
     margin-top: 2vh;
+}
+
+
+
+.game-over-container {
+    font-size: 56px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    width: 100%;
+    text-align: center;
+    color: #6E6E73;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+
+    pointer-events: none;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.game-over-container.show {
+    animation: gameOverTakeover 3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes gameOverTakeover {
+    /* --- ENTER --- */
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.75);
+        filter: blur(6px);
+    }
+
+    /* --- ARRIVE --- */
+    25% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        filter: blur(0);
+    }
+
+    /* --- HOLD --- */
+    55% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        filter: blur(0);
+    }
+
+    /* --- EXIT --- */
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -35%) scale(0.9);
+        filter: blur(4px);
+    }
 }

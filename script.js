@@ -21,17 +21,28 @@ const initNewGame = () => {
 }; initNewGame();
 
 
+const gameOverContainerHTML = document.querySelector(".game-over-container");
 const gameOver = () => {
-    console.log("game over!")
-}
+    board.gameOverFadeOut();
+    gameOverContainerHTML.classList.remove("show");
+    void gameOverContainerHTML.offsetWidth; // restart animation
+    gameOverContainerHTML.classList.add("show");
+
+    tc.clearRect(0 ,0, tileCanvas.width, tileCanvas.height);
+    setTimeout(() => {
+        board.reset();
+    }, 1500)
+};
 
 
 // storage.clear()
 
-// add several more colors for the tiles
-// make a second UI version of scores placements
-
 // add settings logic + UI: autograb, watch ad for wildcard, start again, 
 // New Game / Game Over logic + UI
 
-window.document.addEventListener('keydown', (e) => {if(e.key === 'q') board.reset()});
+window.document.addEventListener('keydown', (e) => {
+    if(e.key === 'q') board.reset()
+    if (e.key === 'f') board.gameOverFadeOut()
+    if(e.key === 'g') gameOver()
+
+});

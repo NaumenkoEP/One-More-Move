@@ -21,7 +21,7 @@ class Tile {
 
         this.dropped = false;
 
-        this.fontSize = 40;
+        this.fontSize = 47;
         this.fontFamily = board.fontFamily;
 
         this._grabListener = (e) => {
@@ -123,8 +123,6 @@ class Tile {
         return color;
     }
 
-
-
     draw(drawNumber){
         this.ctx.beginPath();
         this.ctx.fillStyle = this.color;
@@ -133,7 +131,7 @@ class Tile {
         this.ctx.fill();
 
         if(drawNumber){
-            this.ctx.font = `47px ${this.fontFamily}`;
+            this.ctx.font = `${this.fontSize}px ${this.fontFamily}`;
             this.ctx.textAlign = "center";      
             this.ctx.textBaseline = "middle"; 
             
@@ -217,6 +215,46 @@ class Tile {
         requestAnimationFrame(animate);
 
     }
+    fadeOutAnimation() {
+        let w = board.tileSize;
+        let h = board.tileSize;
+
+        const target = 0;
+        // const speed = isMobile ? 8 : 12;
+        const speed = 2;
+
+        const cx = this.hoveredHolder.x + board.tileSize / 2;
+        const cy = this.hoveredHolder.y + board.tileSize / 2;
+
+
+        const animate = () => {
+            this.hoveredHolder.draw();
+
+            w -= speed;
+            h -= speed;
+            this.fontSize -= speed / 2;
+
+            if (w <= target) w = target;
+            if (h <= target) h = target;
+            if (this.fontSize < 2) this.fontSize = 0;
+
+            this.width = w;
+            this.height = h;
+            this.x = cx - w / 2;
+            this.y = cy - h / 2;
+
+            this.draw(false); // alternative true
+
+            if (w > target || h > target) {
+                requestAnimationFrame(animate);
+            } else {
+                this.hoveredHolder.draw(false);
+            }
+        };
+
+        requestAnimationFrame(animate);
+    }
+
     display(){
         if(this.value !== "?") this.draw(true);
         else this.wildCardAnimation();

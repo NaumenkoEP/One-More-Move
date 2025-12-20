@@ -218,6 +218,27 @@ class BoardManager {
         this.renderScore(0, this.fontSize);
 
     } 
+    gameOverFadeOut(){
+        const center = (this.dimentions - 1) / 2;
+
+        const tiles = [];
+
+        for (let r = 0; r < this.dimentions; r++) {
+            for (let c = 0; c < this.dimentions; c++) {
+                const tile = this.tileGrid[r][c];
+                if (tile !== 0) {
+                    const dist = Math.hypot(r - center, c - center);
+                    tiles.push({ tile, dist });
+                }
+            }
+        }
+
+        tiles
+            .sort((a, b) => a.dist - b.dist)
+            .forEach(({ tile }, i) => {
+                setTimeout(() => tile.fadeOutAnimation(), i * 50);
+            });
+    }
 
     getHighestValue(){
         const values = new Set();
@@ -492,22 +513,26 @@ class BoardManager {
 
         // handle the best score logic
     }
-    scorePulseAnmiation() {
-        const center = (this.maxFontSize + this.minFontSize) / 2;
-        const amplitude = (this.maxFontSize - this.minFontSize) / 2;
 
+    getScorePulseSpeed(){
         const minSpeed = 0.003;
-        const maxSpeed = 0.006;
+        const maxSpeed = 0.01;
         const comboCap = 50;
 
         const t = Math.min(this.combo, comboCap) / comboCap;
         const curved = t * t; // quadratic ease-in
 
         const speed = minSpeed + curved * (maxSpeed - minSpeed);
+        return speed;
+
+    }
+    scorePulseAnmiation() {
+        const center = (this.maxFontSize + this.minFontSize) / 2;
+        const amplitude = (this.maxFontSize - this.minFontSize) / 2;
 
         const animate = (now) => {
             if(!this.isAddingScore){
-                const t = (now - this.pulseStartTime) * speed + this.pulsePhaseOffset;
+                const t = (now - this.pulseStartTime) * this.getScorePulseSpeed() + this.pulsePhaseOffset;
     
                 if(this.score > 100) this.fontSize = center + Math.sin(t) * amplitude;
                 this.renderScore(this.score, this.fontSize);
@@ -518,6 +543,7 @@ class BoardManager {
 
         requestAnimationFrame(animate);
     }
+
     renderScore(value, fontSize){
 
         sc.fillStyle = this.bgColor;
@@ -539,7 +565,7 @@ class BoardManager {
         const x = size / 2;
         const y = this.tileSize - 25;
 
-        const baseColor = Tile.getColor(String(Math.ceil(board.combo / 5)));
+        const baseColor = Tile.getColor(String(Math.ceil(Math.min(board.combo / 5, 12))));
         const radius = 35;
 
         // --- Create radial gradient ---
@@ -633,57 +659,3 @@ class BoardManager {
 
 
 
-
- // getTileValue() {
-    //     const highest = Math.max(1, this.getHighestValue());
-    //     const empty = this.getEmptyCells();
-    //     const size = this.dimentions * this.dimentions;
-
-    //     const fullness = 1 - empty / size;               // 0 → 1
-    //     const difficulty = Math.min(1,
-    //         (highest / 10) * 0.6 +
-    //         fullness * 0.4
-    //     );
-
-    
-    //     const specialChance = 0.01 + difficulty * 0.02;  // 1% → 3%
-    //     const r = Math.random();
-    //     if (r < specialChance) return "?";        
-            
-    
-    //     // Base weights for tiles 1–7
-    //     let weights = [1, 0.9, 0.7, 0.45, 0.22, 0.12, 0.05];
-
-    //     // Adjust weights based on difficulty + highest
-    //     weights = weights.map((w, i) => {
-    //         const value = i + 1;
-
-    //         // Hard cap: don't spawn tiles too far above highest
-    //         if (value > highest + 2) return 0;
-
-    //         // Late game: reduce 1s and 2s
-    //         const lowPenalty = (value <= 2 ? fullness * 0.5 : 0);
-
-    //         // Boost higher tiles slightly with difficulty
-    //         const diffBoost = difficulty * value * 0.02;
-
-    //         return Math.max(0, w - lowPenalty + diffBoost);
-    //     });
-
-    //     // If ALL weights are zero → fallback safe distribution
-    //     let total = weights.reduce((a, b) => a + b, 0);
-    //     if (total <= 0 || !isFinite(total)) {
-    //         weights = [1, 0.8, 0.5, 0.3, 0.12, 0.06, 0.03];
-    //         total = weights.reduce((a, b) => a + b, 0);
-    //     }
-
-    //     // Normalize selection
-    //     let p = Math.random() * total;
-
-    //     for (let i = 0; i < weights.length; i++) {
-    //         if (p < weights[i]) return i + 1;
-    //         p -= weights[i];
-    //     }
-
-    //     return 1; // fallback safety
-    // }
