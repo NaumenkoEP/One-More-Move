@@ -200,16 +200,13 @@ body {
     background: #FFFFFF;
     border-radius: 16px;
 
-    box-shadow:
-        0 6px 0 rgba(0,0,0,0.08);
+    box-shadow: 0 6px 0 rgba(0,0,0,0.08);
 
     transition: transform 0.1s ease;
 }
 
 .settings-window .option:active {
-    transform: translateY(3px);
-    box-shadow:
-        0 3px 0 rgba(0,0,0,0.08);
+    transform: translateY(-3px);
 }
 
 .settings-window .option span {
