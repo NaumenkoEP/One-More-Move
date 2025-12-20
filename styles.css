@@ -114,8 +114,8 @@ body {
     flex-flow: column nowrap;
     position: absolute;
     left: 50%;
-    top: 48%;
-    transform: translate(-50%, -52%) scale(0.92);
+    top: 52%;
+    transform: translate(-50%, -48%) scale(0.92);
 
     width: 320px;
     padding: 16px;
