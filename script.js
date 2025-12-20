@@ -32,15 +32,23 @@ const gameOver = () => {
     gameOverContainerHTML.classList.add("show");
 
     tc.clearRect(0 ,0, tileCanvas.width, tileCanvas.height);
-    setTimeout(() => {
-        board.reset();
-    }, 1500)
+    setTimeout(() => {board.reset()}, 1500);
 };
 
 const settingsWindowHTML = document.querySelector(".settings-window");
-const openSettings = () => settingsWindowHTML.style.display = "flex"; const closeSettings = () => settingsWindowHTML.style.display = "none";
+const settingsOverlayHTML = document.querySelector(".settings-overlay");
+const openSettings = () => {
+    settingsWindowHTML.style.display = "flex"; 
+    settingsOverlayHTML.style.display = "block";
+}
+const closeSettings = () => {
+    settingsWindowHTML.style.display = "none";
+    settingsOverlayHTML.style.display = "none";
+}; document.addEventListener("mousedown", (e) => {if(!settingsWindowHTML.contains(e.target)) closeSettings()});
 
-// add settings logic + UI: sound, autograb, watch ad for wildcard, start again, 
+
+
+
 
 window.document.addEventListener('keydown', (e) => {
     if(e.key === 'q') board.reset()
@@ -48,3 +56,6 @@ window.document.addEventListener('keydown', (e) => {
     if(e.key === 'g') gameOver()
 
 });
+
+
+// get settings to work: sounds, autograb, lucky tile request

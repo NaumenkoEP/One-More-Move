@@ -10,8 +10,7 @@
 
 </head>
 <body>
-	
-	
+	<div class="settings-overlay"></div>
 
 	<div class="game-borders">
 		<div class="game-over-container"> 
@@ -37,54 +36,59 @@
 
 		<div class="settings-window">
 		
-		<div class="header">
-			<span class="title">Settings</span>
-			<button onclick="closeSettings();" class="close-button">X</button>
-		</div>
-		
-		<div class="container">
+			<div class="header">
+				<span class="title">Settings</span>
+				<!-- <img src="assets/close-icon.png" onclick="closeSettings();" class="close-button"> -->
+			</div>
 			
-			<div class="option">
-				<div class="name">
-					<span>Sounds</span>
+			<div class="container">
+				
+				<div class="option">
+					<div class="name">
+						<span>Sounds</span>
+					</div>
+					<div class="set">
+						<input id="sounds" class="check" type="checkbox" checked>
+					</div>
 				</div>
-				<div class="set">
-					<input id="sounds" class="check" type="checkbox" checked>
-				</div>
-			</div>
 
-			<div class="option">
-				<div class="name">
-					<span>Auto Grab</span>
+				<div class="option">
+					<div class="name">
+						<span>Auto Grab</span>
+					</div>
+					<div class="set">
+						<input id="autograb" class="check" type="checkbox" checked>
+					</div>
 				</div>
-				<div class="set">
-					<input id="autograb" class="check" type="checkbox" checked>
-				</div>
-			</div>
 
-			<div class="option">
-				<div class="name">
-					<span>Lucky Tile</span>
+				<div style="cursor: pointer;" onclick="requestWildCard()" class="option">
+					<div class="name">
+						<span>Lucky Tile</span>
+					</div>
+					<div class="set">
+						<img width="35px" src="assets/ad-icon.png">
+					</div>
 				</div>
-				<div class="set">
-					<button>X</button>
-				</div>
-			</div>
 
-			<div class="option">
-				<div class="name">
-					<span>Restart</span>
+				<div style="cursor: pointer;" onclick="{
+					board.gameOverFadeOut();
+					board.reset(); 
+					closeSettings(); 
+					}" class="option">
+					<div class="name">
+						<span>Restart</span>
+					</div>
+					<div class="set">
+						<img width="35px" src="assets/restart-icon.png">
+					</div>
 				</div>
-				<div class="set">
-					<button>X</button>
-				</div>
-			</div>
 
-		</div>
+			</div>
 
 		</div>
 
 	</div>
+
 	<script src="classes/MemoryManager.js"></script>
 	<script src="classes/BoardManager.js"></script>
 	<script src="classes/Tile.js"></script>

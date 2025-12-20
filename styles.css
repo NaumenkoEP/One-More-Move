@@ -51,6 +51,7 @@ body {
 }
 
 .game-borders {
+    margin-top: 2px;
     display: flex;
     flex-flow: column nowrap;
     align-items: center;
@@ -107,7 +108,15 @@ body {
 
 
 
-
+.settings-overlay{
+    width: 100%;
+    height: 100%;
+    background-color: #6E6E73;
+    position: absolute;
+    z-index: 8;
+    opacity: 0.5;
+    display: none;
+}
 
 .settings-window {
     display: none;
@@ -152,7 +161,7 @@ body {
 .settings-window .header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
 
     padding: 8px 10px 14px;
 }
@@ -167,21 +176,9 @@ body {
 
 .close-button {
     width: 36px;
-    height: 36px;
-
-    border: none;
-    border-radius: 12px;
-
-    background: #E4E6EB;
-    font-weight: 700;
-    color: #444;
-
     cursor: pointer;
 }
 
-.close-button:hover {
-    background: #d8dade;
-}
 
 .settings-window .container {
     display: flex;

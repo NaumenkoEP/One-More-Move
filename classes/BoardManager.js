@@ -217,6 +217,8 @@ class BoardManager {
         this.bestScoreCounterHTML.style.color = "#6E6E73";
         this.renderScore(0, this.fontSize);
 
+        isGameOver = false;
+
     } 
     gameOverFadeOut(){
         const center = (this.dimentions - 1) / 2;
