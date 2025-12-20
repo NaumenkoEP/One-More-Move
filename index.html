@@ -10,8 +10,57 @@
 
 </head>
 <body>
-	<div class="game-borders">
+	
+	<div class="settings-window">
+		
+		<div class="header">
+			<span class="title">Settings</span>
+			<button onclick="closeSettings();" class="close-button">X</button>
+		</div>
+		
+		<div class="container">
+			
+			<div class="option">
+				<div class="name">
+					<span>Sounds</span>
+				</div>
+				<div class="set">
+					<input id="sounds" class="check" type="checkbox" checked>
+				</div>
+			</div>
 
+			<div class="option">
+				<div class="name">
+					<span>Auto Grab</span>
+				</div>
+				<div class="set">
+					<input id="autograb" class="check" type="checkbox" checked>
+				</div>
+			</div>
+
+			<div class="option">
+				<div class="name">
+					<span>Lucky Tile</span>
+				</div>
+				<div class="set">
+					<button>X</button>
+				</div>
+			</div>
+
+			<div class="option">
+				<div class="name">
+					<span>Restart</span>
+				</div>
+				<div class="set">
+					<button>X</button>
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+
+	<div class="game-borders">
 		<div class="game-over-container"> 
 			<div class="title">Game Over!</div>
 		</div>
@@ -22,8 +71,8 @@
 				<div class="high-score-counter">0</div>
 			</div>
 
-			<div class="settings-container">
-				<img class="settings-icon" src="assets/settings-icon.png">
+			<div class="settings-button">
+				<img onclick="openSettings();" class="settings-icon" src="assets/settings-icon.png">
 			</div>
 		</div>
 

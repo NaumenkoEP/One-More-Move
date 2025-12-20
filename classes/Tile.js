@@ -283,6 +283,8 @@ class Tile {
         gameCanvas.addEventListener("click", this._dropListener);
     }
     drop(){
+        if(isGameOver) return;
+        
         this.dropped = true;
 
         this.x = this.hoveredHolder.x;

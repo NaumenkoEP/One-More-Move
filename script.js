@@ -22,8 +22,12 @@ const initNewGame = () => {
 
 
 const gameOverContainerHTML = document.querySelector(".game-over-container");
+let isGameOver = false;
 const gameOver = () => {
+    isGameOver = true;
+
     board.gameOverFadeOut();
+
     gameOverContainerHTML.classList.remove("show");
     void gameOverContainerHTML.offsetWidth; // restart animation
     gameOverContainerHTML.classList.add("show");
@@ -34,11 +38,12 @@ const gameOver = () => {
     }, 1500)
 };
 
+const settingsWindowHTML = document.querySelector(".settings-window");
+const openSettings = () => settingsWindowHTML.style.display = "flex";
 
-// storage.clear()
+const closeSettings = () => settingsWindowHTML.style.display = "none";
 
-// add settings logic + UI: autograb, watch ad for wildcard, start again, 
-// New Game / Game Over logic + UI
+// add settings logic + UI: sound, autograb, watch ad for wildcard, start again, 
 
 window.document.addEventListener('keydown', (e) => {
     if(e.key === 'q') board.reset()

@@ -47,6 +47,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+
 }
 
 .game-borders {
@@ -58,7 +59,7 @@ body {
 
 
 
-.header{
+.game-borders .header{
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
@@ -100,6 +101,149 @@ body {
     background-color: var(--pastel-bg); 
     margin-top: 2vh;
 }
+
+
+
+
+
+.settings-window {
+    display: flex;
+    flex-flow: column nowrap;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(0.92);
+
+    width: 320px;
+    padding: 16px;
+
+    background: #F3F4F6; /* same family as board bg */
+    border-radius: 22px;
+
+    box-shadow:
+        0 12px 0 rgba(0,0,0,0.08),
+        0 22px 40px rgba(0,0,0,0.25);
+
+    opacity: 0;
+    animation: gameModalIn 0.35s cubic-bezier(.25,1.4,.5,1) forwards;
+
+    z-index: 10;
+}
+
+@keyframes gameModalIn {
+    0% {
+        transform: translate(-50%, -60%) scale(0.7);
+        opacity: 0;
+    }
+    70% {
+        transform: translate(-50%, -50%) scale(1.05);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+} 
+
+
+.settings-window .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 8px 10px 14px;
+}
+
+.settings-window .title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    color: #2B2B2B;
+}
+
+
+.close-button {
+    width: 36px;
+    height: 36px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: #E4E6EB;
+    font-weight: 700;
+    color: #444;
+
+    cursor: pointer;
+}
+
+.close-button:hover {
+    background: #d8dade;
+}
+
+.settings-window .container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+
+.settings-window .option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 14px 16px;
+
+    background: #FFFFFF;
+    border-radius: 16px;
+
+    box-shadow:
+        0 6px 0 rgba(0,0,0,0.08);
+
+    transition: transform 0.1s ease;
+}
+
+.settings-window .option:active {
+    transform: translateY(3px);
+    box-shadow:
+        0 3px 0 rgba(0,0,0,0.08);
+}
+
+.settings-window .option span {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2E2E2E;
+}
+
+.check {
+    appearance: none;
+    width: 36px;
+    height: 36px;
+
+    border-radius: 10px;
+    background: #EDEDED;
+
+    box-shadow:
+        inset 0 0 0 2px #ccc;
+
+    cursor: pointer;
+}
+
+.check:checked {
+    background: #4FC9B0; /* reuse your tile palette */
+    box-shadow:
+        inset 0 0 0 2px rgba(0,0,0,0.15);
+}
+
+.settings-window .option:last-child {
+    background: #FFECEC;
+}
+
+.settings-window .option:last-child span {
+    color: #C62828;
+}
+
+
 
 
 
