@@ -112,10 +112,10 @@ body {
 .settings-window {
     display: none;
     flex-flow: column nowrap;
-    position: fixed;
+    position: absolute;
     left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%) scale(0.92);
+    top: 45%;
+    transform: translate(-50%, -55%) scale(0.92);
 
     width: 320px;
     padding: 16px;
