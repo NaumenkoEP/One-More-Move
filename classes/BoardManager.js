@@ -29,15 +29,17 @@ class BoardManager {
         this.scoreContainerHTML = document.querySelector('.score-container');
         this.isAddingScore = true;
 
-        this.maxFontSize = 50;
-        this.minFontSize = 45;
-        this.fontSize = this.maxFontSize;
+        // this.maxFontSize = 50;
+        // this.minFontSize = 45;
+        // this.fontSize = this.maxFontSize;
+
+        this.fontSize = 50;
         
         this.bestScore;
         this.isBestScoreAdding;
         this.bestScoreCounterHTML = document.querySelector('.high-score-counter');
         this.bestScoreIconHTML = document.querySelector(".crown-icon");
-        this.bestScoreAddingColor = "#D9B07A"
+        // this.bestScoreAddingColor = "#D9B07A"
 
         this.pulseStartTime = performance.now();
         this.pulsePhaseOffset = 0;
@@ -87,10 +89,10 @@ class BoardManager {
                         String(value),
                         holder.x,
                         holder.y,
-                        gc // must draw on game canvas
+                        gc  
                     );
 
-                    tile.dropped = true;     // prevents grab animation
+                    tile.dropped = true;    
                     tile.hoveredHolder = holder;
                     tile.coordinates = { row, col };
                     tile.id = holder.id;
@@ -105,7 +107,6 @@ class BoardManager {
             return;
         }
 
-        // no saved grid → initialize empty
         for (let row = 0; row < this.dimentions; row++) {
             this.tileGrid[row] = [];
             for (let col = 0; col < this.dimentions; col++) {
@@ -140,8 +141,8 @@ class BoardManager {
         const savedScore = storage.score;
         if (savedScore !== null && savedScore > 0) {
             this.score = 0;
-            this.renderScore(0, this.fontSize); // draw zero first
-            this.addScore(savedScore);          // animate up
+            this.renderScore(0, this.fontSize);
+            this.addScore(savedScore);          
         } else {
             this.score = 0;
             this.renderScore(0, this.fontSize);
@@ -155,10 +156,10 @@ class BoardManager {
         const isBestScoreAdding = storage.isBestScoreAdding;
         if(isBestScoreAdding !== null) this.isBestScoreAdding = isBestScoreAdding;
         else this.isBestScoreAdding = false;
-        if(this.isBestScoreAdding){
-            this.bestScoreCounterHTML.style.color = this.bestScoreAddingColor;
-            this.bestScoreIconHTML.src = "assets/crown-icon-new.png";
-        }
+        // if(this.isBestScoreAdding){
+        //     this.bestScoreCounterHTML.style.color = this.bestScoreAddingColor;
+        //     this.bestScoreIconHTML.src = "assets/crown-icon-new.png";
+        // }
 
         const combo = storage.combo;
         if(combo !== null) this.combo = combo;
@@ -169,7 +170,7 @@ class BoardManager {
         else this.failures = 0;
 
 
-        this.scorePulseAnmiation();
+        // this.scorePulseAnmiation();
     }
     reset() {
         for(let row = 0; row < this.dimentions; row++){
@@ -276,72 +277,55 @@ class BoardManager {
         const empty = this.getEmptyCells();
         const size = this.dimentions * this.dimentions;
 
-        const fullness = 1 - empty / size;   // 0 → 1
+        const fullness = 1 - empty / size;  
         const difficulty = Math.min(1,
             (highest / 10) * 0.6 +
             fullness * 0.4
         );
 
-        // -----------------------------
-        // SPECIAL TILE (rare)
-        // -----------------------------
-        const specialChance = 0.01 + difficulty * 0.02; // 1% → 3%
-        if (Math.random() < specialChance) return "?";
+        if(highest > 3){
+            const specialChance = 0.01 + difficulty * 0.02; // 1% → 3%
+            if (Math.random() < specialChance) return "?";
+        }
 
-        // -----------------------------
-        // BASE DISTRIBUTION (1–7)
-        // -----------------------------
+       
         let weights = [1, 0.9, 0.7, 0.45, 0.22, 0.12, 0.05];
 
         weights = weights.map((w, i) => {
             const value = i + 1;
 
-            // Never spawn far above progress
             if (value > highest + 2) return 0;
 
-            // 🔽 Gradual decay of low tiles
             let lowDecay = 1;
             if (value <= 3) {
-                // Smooth curve: early game untouched, late game reduced
                 lowDecay = Math.max(
                     0.15,
                     1 - difficulty * 0.85
                 );
             }
 
-            // 🔼 Slight boost to mid/high tiles
             const diffBoost = difficulty * value * 0.02;
 
             return Math.max(0, w * lowDecay + diffBoost);
         });
 
-        // -----------------------------
-        // HIDDEN MERCY SYSTEM
-        // -----------------------------
-        // Trigger only when board is tight AND player is strong
+
         if (empty <= 2 && highest >= 7) {
             weights = weights.map((w, i) => {
                 const value = i + 1;
 
-                // Mercy favors tiles that are actually mergeable
                 if (value <= highest) return w * 1.6;
 
                 return w;
             });
         }
 
-        // -----------------------------
-        // SAFETY NET
-        // -----------------------------
         let total = weights.reduce((a, b) => a + b, 0);
         if (total <= 0 || !isFinite(total)) {
             weights = [1, 0.8, 0.5, 0.3, 0.12, 0.06, 0.03];
             total = weights.reduce((a, b) => a + b, 0);
         }
 
-        // -----------------------------
-        // RANDOM PICK
-        // -----------------------------
         let p = Math.random() * total;
 
         for (let i = 0; i < weights.length; i++) {
@@ -350,7 +334,7 @@ class BoardManager {
         }
 
         console.log("absolute fallback")
-        return 1; // absolute fallback
+        return 1; 
     }
 
     createPreviewTile(value) {
@@ -439,9 +423,10 @@ class BoardManager {
             this.bestScore = end;
             storage.save("best-score", this.bestScore);
             
-            this.bestScoreCounterHTML.style.color = this.bestScoreAddingColor;
+            // this.bestScoreCounterHTML.style.color = this.bestScoreAddingColor;
+            // this.bestScoreIconHTML.src = "assets/crown-icon-new.png";
+            
             this.bestScoreCounterHTML.innerHTML = this.bestScore;
-            this.bestScoreIconHTML.src = "assets/crown-icon-new.png";
 
             if (amount <= 5) {
                 this.bestScoreCounterHTML.innerHTML = end;
@@ -471,7 +456,6 @@ class BoardManager {
             }
         }
 
-        // Small value? → snap instantly or short animate
         if (amount <= 5) {
             sc.fillStyle = this.bgColor;
             sc.fillRect(0, 0, size, this.tileSize);
@@ -484,7 +468,6 @@ class BoardManager {
             return;
         }
 
-        // Standard animation for big jumps
         const duration = 600;
         const startTime = performance.now();
 
@@ -496,12 +479,14 @@ class BoardManager {
             const eased = progress * (2 - progress);
 
             const currentShown = Math.floor(start + (end - start) * eased);
-            this.renderScore(currentShown, this.maxFontSize + 5);
+            // this.renderScore(currentShown, this.maxFontSize + 5);
+            this.renderScore(currentShown, this.fontSize)
     
             if (progress < 1) {
                 requestAnimationFrame(animate);
             } else {
-                this.renderScore(end, this.maxFontSize + 5);
+                // this.renderScore(end, this.maxFontSize + 5);
+                this.renderScore(end, this.fontSize)
 
                 this.pulseStartTime = performance.now();
                 this.pulsePhaseOffset = Math.PI / 2;
@@ -512,8 +497,6 @@ class BoardManager {
         };
         
         requestAnimationFrame(animate);
-
-        // handle the best score logic
     }
 
     getScorePulseSpeed(){
@@ -522,7 +505,7 @@ class BoardManager {
         const comboCap = 50;
 
         const t = Math.min(this.combo, comboCap) / comboCap;
-        const curved = t * t; // quadratic ease-in
+        const curved = t * t;
 
         const speed = minSpeed + curved * (maxSpeed - minSpeed);
         return speed;
@@ -559,7 +542,7 @@ class BoardManager {
         sc.textAlign = "center";      
         sc.textBaseline = "middle"; 
 
-        sc.fillStyle = "black"; // Alternative: "#6E6E73"
+        sc.fillStyle = "black"; 
         sc.fillText(value, size / 2, this.tileSize - 25);
     }
     renderComboCircle(){
@@ -570,17 +553,14 @@ class BoardManager {
         const baseColor = Tile.getColor(String(Math.ceil(Math.min(board.combo / 5, 12))));
         const radius = 35;
 
-        // --- Create radial gradient ---
         const gradient = sc.createRadialGradient(
-            x, y, 0,      // center
-            x, y, radius  // outer
+            x, y, 0,      
+            x, y, radius  
         );
 
-        // Core (thickest)
         gradient.addColorStop(0.0, baseColor);
         gradient.addColorStop(0.2, baseColor);
 
-        // Smooth Gaussian-like falloff
         gradient.addColorStop(0.45, baseColor + "CC");
         gradient.addColorStop(0.65, baseColor + "88");
         gradient.addColorStop(0.8,  baseColor + "44");
@@ -623,10 +603,8 @@ class BoardManager {
         }
 
         draw() {
-            // FULL HARD CLEAR (square)
             gc.clearRect(this.x - 1, this.y - 1, this.width + 2, this.height + 2);
 
-            // THEN draw rounded holder
             gc.fillStyle = this.color;
             gc.beginPath();
             gc.roundRect(
@@ -657,7 +635,3 @@ class BoardManager {
         }
     }
 }
-
-
-
-

@@ -59,3 +59,5 @@ window.document.addEventListener('keydown', (e) => {
 
 
 // get settings to work: sounds, autograb, lucky tile request
+
+// storage.clear();
