@@ -349,6 +349,15 @@ class BoardManager {
             this.previewTileSize / 2,
             tc
         );
+
+         if (autograbON) {
+            // defer one frame to avoid race conditions
+            requestAnimationFrame(() => {
+                if (this.previewTile && !this.previewTile.dropped) {
+                    this.previewTile.grab();
+                }
+            });
+        }
     }
     displayTiles(){
         this.currentValue = this.nextValue;

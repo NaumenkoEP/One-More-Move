@@ -11,6 +11,11 @@ class MemoryManager {
 
         this.currentValue = this.get("current-value");
         this.nextValue = this.get("next-value");
+
+        this.options = {
+            sounds: this.get("options-sounds"),
+            autograb: this.get("options-autograb")
+        };
     }
     save(key, value){
         if (value === undefined) return;

@@ -23,7 +23,7 @@ class Tile {
 
         this.fontSize = 47;
         this.fontFamily = board.fontFamily;
-
+        
         this._grabListener = (e) => {
             const rect = tileCanvas.getBoundingClientRect();
             const mouseX = e.clientX - rect.left;
@@ -33,8 +33,11 @@ class Tile {
                 this.grab();
             }
         }; 
-        if (this.ctx === tc) tileCanvas.addEventListener("click", this._grabListener);
         
+        if (this.ctx === tc) {
+            tileCanvas.addEventListener("click", this._grabListener);
+        }
+
 
         this.hoveredHolder;
         this._dropListener = (e) => {
@@ -279,7 +282,7 @@ class Tile {
                 if(holder.empty) holder.indicateEmpty();
             }
         }
-        tileCanvas.removeEventListener("click", this._grabListener);
+        if(!autograbON) tileCanvas.removeEventListener("click", this._grabListener);
         gameCanvas.addEventListener("click", this._dropListener);
     }
     drop(){

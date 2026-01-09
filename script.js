@@ -13,13 +13,28 @@ window.addEventListener("load", () => {headerHTML.style.width = size + "px"});
 
 const storage = new MemoryManager(); const board = new BoardManager();
 
+let soundsON; let autograbON;
+const sounds = storage.options.sounds;
+if(sounds !== null) soundsON = sounds;
+else soundsON = true;
+const autograb = storage.options.autograb;
+if(autograb !== null) autograbON = autograb;
+else autograbON = true;
+
+const soundsCheckBoxHTML = document.querySelector(".sounds-check");
+if(soundsON) soundsCheckBoxHTML.checked = true;
+else soundsCheckBoxHTML.checked = false;
+
+const autograbCheckBoxHTML = document.querySelector(".autograb-check");
+if(autograbON) autograbCheckBoxHTML.checked = true;
+else autograbCheckBoxHTML.checked = false;
+
 const initNewGame = () => {
     tileCanvas.width = size; tileCanvas.height = board.tileSize + board.previewTileSize / 2;
     scoreCanvas.width = size; scoreCanvas.height = board.tileSize + 20;
     
     board.initialise();
 }; initNewGame();
-
 
 const gameOverContainerHTML = document.querySelector(".game-over-container"); let isGameOver = false;
 const gameOver = () => {
@@ -44,6 +59,14 @@ const openSettings = () => {
 const closeSettings = () => {
     settingsWindowHTML.style.display = "none";
     settingsOverlayHTML.style.display = "none";
+
+    soundsON = soundsCheckBoxHTML.checked; storage.save("options-sounds", soundsCheckBoxHTML.checked);
+    autograbON = autograbCheckBoxHTML.checked; storage.save("options-autograb", autograbCheckBoxHTML.checked);
+
+    if (autograbON && board.currentTile && !board.currentTile.dropped) board.currentTile.grab();
+
+
+
 }; document.addEventListener("mousedown", (e) => {if(!settingsWindowHTML.contains(e.target)) closeSettings()});
 
 
