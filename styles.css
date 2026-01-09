@@ -110,10 +110,10 @@ body {
 
 .settings-overlay{
     width: 100%;
-    height: 100%;
+    height: 110%;
     background-color: #6E6E73;
     position: absolute;
-    z-index: 8;
+    z-index: 2;
     opacity: 0.5;
     display: none;
 }
@@ -139,7 +139,7 @@ body {
     opacity: 0;
     animation: gameModalIn 0.35s cubic-bezier(.25,1.4,.5,1) forwards;
 
-    z-index: 10;
+    z-index: 3;
 }
 
 @keyframes gameModalIn {
