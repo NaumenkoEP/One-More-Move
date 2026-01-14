@@ -593,6 +593,21 @@ class BoardManager {
         this.failures = 0;
         storage.save("failures", this.failures);
     }
+    
+    grantWildCard(){
+        this.currentValue = "?";
+        storage.save("current-value", this.currentValue);
+        this.createPreviewTile(this.currentValue);
+    }
+
+    // TODO WITH SDK
+    requestWildCard(){
+        let granted = true;
+        if(granted) this.grantWildCard();
+        else console.log("no tile for you");
+
+        closeSettings();
+    }
 
     static TileHolder = class {
         constructor(parent, x, y){

@@ -65,8 +65,6 @@ const closeSettings = () => {
 
     if (autograbON && board.currentTile && !board.currentTile.dropped) board.currentTile.grab();
 
-
-
 }; document.addEventListener("mousedown", (e) => {if(!settingsWindowHTML.contains(e.target)) closeSettings()});
 
 
@@ -74,13 +72,10 @@ const closeSettings = () => {
 
 
 window.document.addEventListener('keydown', (e) => {
-    if(e.key === 'q') board.reset()
-    if (e.key === 'f') board.gameOverFadeOut()
-    if(e.key === 'g') gameOver()
-
+    if(e.key === 'q') board.grantLuckyTile();
 });
 
-
 // get settings to work: sounds, lucky tile request
+// fix the failed indication of empty tile holders after game over
 
 // storage.clear();
