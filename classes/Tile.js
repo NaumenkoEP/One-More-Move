@@ -393,7 +393,7 @@ class Tile {
 
             if(board.getEmptyCells() < 1) gameOver();
 
-            if (soundsON) soundManager.play("drop");
+            if (soundsON) soundManager.play("drop", {volume: 0.8});
 
             
             return;
@@ -419,7 +419,7 @@ class Tile {
 
         this.color = Tile.getColor(this.value);
 
-        if(soundsON) soundManager.play("drop", { playbackRate: 1 + mergeCount * 0.08 + Math.min(board.combo * 0.03, 2), volume: 1.2 });
+        if(soundsON) soundManager.play("drop", {playbackRate: 1 + Math.min(board.combo * 0.03, 1.5), volume: 1 });
 
 
         // Recursive merge (after visual update)

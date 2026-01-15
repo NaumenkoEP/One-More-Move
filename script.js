@@ -82,6 +82,7 @@ const closeSettings = () => {
 
 // fix the failed indication of empty tile holders after game over
 // fix the combo nullifying error
+// option to revive when game over by merging or getting rid of the small tiles
 
 // sounds: button click, gameover, reset
 
