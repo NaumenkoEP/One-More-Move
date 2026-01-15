@@ -287,6 +287,8 @@ class Tile {
     }
     drop(){
         if(isGameOver) return;
+
+        if (soundsON) soundManager.play("drop") 
         
         this.dropped = true;
 
@@ -303,9 +305,6 @@ class Tile {
 
         gameCanvas.removeEventListener("click", this._dropListener);
         tileCanvas.removeEventListener("click", this._grabListener);
-
-        // tc.fillStyle = "red";
-        // tc.fillRect(tileCanvas.width / 2 - board.tileSize / 2 - 1, board.previewTileSize / 2 - 1, board.tileSize + 2, board.tileSize + 2);
 
         tc.clearRect(tileCanvas.width / 2 - board.tileSize / 2 - 1, board.previewTileSize / 2 - 1, board.tileSize + 2, board.tileSize + 2);
 

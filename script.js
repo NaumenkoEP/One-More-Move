@@ -13,21 +13,30 @@ window.addEventListener("load", () => {headerHTML.style.width = size + "px"});
 
 const storage = new MemoryManager(); const board = new BoardManager();
 
-let soundsON; let autograbON;
-const sounds = storage.options.sounds;
+// FIX ERROR HERE
+const soundManager = new SoundManager(); 
+async function initSounds() {
+    await soundManager.init();
+
+    await Promise.all([
+        soundManager.load("drop", "audio/drop.mp3"),
+    ]);
+} window.addEventListener("load", initSounds);
+
+let soundsON; const sounds = storage.options.sounds;
 if(sounds !== null) soundsON = sounds;
 else soundsON = true;
-const autograb = storage.options.autograb;
-if(autograb !== null) autograbON = autograb;
-else autograbON = true;
-
 const soundsCheckBoxHTML = document.querySelector(".sounds-check");
 if(soundsON) soundsCheckBoxHTML.checked = true;
 else soundsCheckBoxHTML.checked = false;
 
+let autograbON; const autograb = storage.options.autograb;
+if(autograb !== null) autograbON = autograb;
+else autograbON = true;
 const autograbCheckBoxHTML = document.querySelector(".autograb-check");
 if(autograbON) autograbCheckBoxHTML.checked = true;
 else autograbCheckBoxHTML.checked = false;
+
 
 const initNewGame = () => {
     tileCanvas.width = size; tileCanvas.height = board.tileSize + board.previewTileSize / 2;
@@ -67,15 +76,7 @@ const closeSettings = () => {
 
 }; document.addEventListener("mousedown", (e) => {if(!settingsWindowHTML.contains(e.target)) closeSettings()});
 
-
-
-
-
-window.document.addEventListener('keydown', (e) => {
-    if(e.key === 'q') board.grantLuckyTile();
-});
-
-// get settings to work: sounds, lucky tile request
 // fix the failed indication of empty tile holders after game over
+// sounds: drop, button click, gameover, reset
 
 // storage.clear();

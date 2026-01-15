@@ -51,23 +51,23 @@ class BoardManager {
     }
 
     initHolderGrid() {
-    for (let row = 0; row < this.dimentions; row++) {
-        this.holderGrid[row] = [];
-        for (let col = 0; col < this.dimentions; col++) {
-            const x = this.borderWidth + col * (this.tileSize + this.borderWidth);
-            const y = this.borderWidth + row * (this.tileSize + this.borderWidth);
+        for (let row = 0; row < this.dimentions; row++) {
+            this.holderGrid[row] = [];
+            for (let col = 0; col < this.dimentions; col++) {
+                const x = this.borderWidth + col * (this.tileSize + this.borderWidth);
+                const y = this.borderWidth + row * (this.tileSize + this.borderWidth);
 
-            const holder = new BoardManager.TileHolder(this, x, y);
+                const holder = new BoardManager.TileHolder(this, x, y);
 
-            this.holderGrid[row][col] = holder ;
+                this.holderGrid[row][col] = holder ;
+            }
         }
-    }
 
-    for (let row of this.holderGrid) {
-        for (let holder of row) {
-            holder.draw();
+        for (let row of this.holderGrid) {
+            for (let holder of row) {
+                holder.draw();
+            }
         }
-    }
     }
     initTileGrid() {
         const saved = storage.tileGrid;
@@ -219,7 +219,6 @@ class BoardManager {
         this.renderScore(0, this.fontSize);
 
         isGameOver = false;
-
     } 
     gameOverFadeOut(){
         const center = (this.dimentions - 1) / 2;
