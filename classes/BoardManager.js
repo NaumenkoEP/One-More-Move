@@ -29,17 +29,13 @@ class BoardManager {
         this.scoreContainerHTML = document.querySelector('.score-container');
         this.isAddingScore = true;
 
-        // this.maxFontSize = 50;
-        // this.minFontSize = 45;
-        // this.fontSize = this.maxFontSize;
-
         this.fontSize = 50;
         
         this.bestScore;
         this.isBestScoreAdding;
         this.bestScoreCounterHTML = document.querySelector('.high-score-counter');
         this.bestScoreIconHTML = document.querySelector(".crown-icon");
-        // this.bestScoreAddingColor = "#D9B07A"
+        this.isNewBestScoreShown = false;
 
         this.pulseStartTime = performance.now();
         this.pulsePhaseOffset = 0;
@@ -156,10 +152,6 @@ class BoardManager {
         const isBestScoreAdding = storage.isBestScoreAdding;
         if(isBestScoreAdding !== null) this.isBestScoreAdding = isBestScoreAdding;
         else this.isBestScoreAdding = false;
-        // if(this.isBestScoreAdding){
-        //     this.bestScoreCounterHTML.style.color = this.bestScoreAddingColor;
-        //     this.bestScoreIconHTML.src = "assets/crown-icon-new.png";
-        // }
 
         const combo = storage.combo;
         if(combo !== null) this.combo = combo;
@@ -168,9 +160,6 @@ class BoardManager {
         const failures = storage.failures;
         if(failures !== null) this.failures = failures;
         else this.failures = 0;
-
-
-        // this.scorePulseAnmiation();
     }
     reset() {
         for(let row = 0; row < this.dimentions; row++){
@@ -216,6 +205,7 @@ class BoardManager {
         this.isBestScoreAdding = false;
         this.bestScoreIconHTML.src = "assets/crown-icon.png";
         this.bestScoreCounterHTML.style.color = "#6E6E73";
+        this.isNewBestScoreShown = false;
         this.renderScore(0, this.fontSize);
 
         isGameOver = false;
@@ -284,7 +274,10 @@ class BoardManager {
 
         if(highest > 3){
             const specialChance = 0.01 + difficulty * 0.02; // 1% → 3%
-            if (Math.random() < specialChance) return "?";
+            if (Math.random() < specialChance) {
+                if (soundsON) soundManager.loop("wildcard");
+                return "?";
+            }
         }
 
        
@@ -427,12 +420,19 @@ class BoardManager {
         if(end >= this.bestScore) {
             this.isBestScoreAdding = true;
             storage.save("is-best-score-adding", this.isBestScoreAdding);
+
+            if(!this.isNewBestScoreShown){
+                gameOverContainerHTML.classList.remove("show");
+                gameOverContainerHTML.innerHTML = "New High Score";
+                gameOverContainerHTML.style.fontSize = "45px";
+                void gameOverContainerHTML.offsetWidth; // restart animation
+                gameOverContainerHTML.classList.add("show");
+
+                this.isNewBestScoreShown = true;
+            }
             
             this.bestScore = end;
             storage.save("best-score", this.bestScore);
-            
-            // this.bestScoreCounterHTML.style.color = this.bestScoreAddingColor;
-            // this.bestScoreIconHTML.src = "assets/crown-icon-new.png";
             
             this.bestScoreCounterHTML.innerHTML = this.bestScore;
 
@@ -487,13 +487,11 @@ class BoardManager {
             const eased = progress * (2 - progress);
 
             const currentShown = Math.floor(start + (end - start) * eased);
-            // this.renderScore(currentShown, this.maxFontSize + 5);
             this.renderScore(currentShown, this.fontSize)
     
             if (progress < 1) {
                 requestAnimationFrame(animate);
             } else {
-                // this.renderScore(end, this.maxFontSize + 5);
                 this.renderScore(end, this.fontSize)
 
                 this.pulseStartTime = performance.now();

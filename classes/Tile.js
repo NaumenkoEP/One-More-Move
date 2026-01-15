@@ -2,6 +2,14 @@ class Tile {
     constructor(value, x, y, ctx){
         this.value = value;
 
+        this.isWildCard;
+        if(this.value === "?") this.isWildCard = true;
+        else this.isWildCard = false;
+        if (this.isWildCard) {
+            soundManager.stop("wildcard");
+            soundManager.loop("wildcard", {playbackRate: 0.3});
+        }
+
         this.id;
         this.coordinates;
 
@@ -181,7 +189,7 @@ class Tile {
                 clearInterval(this.wildCardAnimationInterval);
             }
 
-        }, 500);
+        }, 450);
     }
     appearAnimation() {
         let w = 0;
@@ -288,7 +296,9 @@ class Tile {
     drop(){
         if(isGameOver) return;
 
-        if (soundsON) soundManager.play("drop") 
+        if (soundsON) {
+            if (this.isWildCard) soundManager.stop("wildcard");
+        } 
         
         this.dropped = true;
 
@@ -382,6 +392,9 @@ class Tile {
             if (board.failures > 3) board.nulifyCombo();
 
             if(board.getEmptyCells() < 1) gameOver();
+
+            if (soundsON) soundManager.play("drop");
+
             
             return;
         }
@@ -405,6 +418,9 @@ class Tile {
         board.updateCombo(mergeCount);
 
         this.color = Tile.getColor(this.value);
+
+        if(soundsON) soundManager.play("drop", { playbackRate: 1 + mergeCount * 0.08 + Math.min(board.combo * 0.03, 2), volume: 1.2 });
+
 
         // Recursive merge (after visual update)
         setTimeout(() => {

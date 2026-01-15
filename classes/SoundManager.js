@@ -3,8 +3,10 @@ class SoundManager {
         this.ctx = null;
         this.buffers = {};
         this.enabled = true;
-        this.volume = 0.7;
+        this.volume = 1;
         this.unlocked = false;
+
+        this.activeLoops = {}; // 🔑 track looping sounds
     }
 
     async init() {
@@ -21,15 +23,7 @@ class SoundManager {
         };
 
         document.addEventListener("pointerdown", unlock);
-
-        document.addEventListener("visibilitychange", () => {
-            if (document.visibilityState === "visible" &&
-                this.ctx.state === "suspended") {
-                this.ctx.resume();
-            }
-        });
     }
-
 
     async load(name, url) {
         const res = await fetch(url);
@@ -55,7 +49,46 @@ class SoundManager {
         src.start();
     }
 
+    // 🔁 LOOPING SOUND
+    loop(name, { volume = 1, playbackRate = 1 } = {}) {
+        if (!this.enabled || !this.unlocked) return;
+        if (this.activeLoops[name]) return; // already looping
+
+        const buffer = this.buffers[name];
+        if (!buffer) return;
+
+        const src = this.ctx.createBufferSource();
+        const gain = this.ctx.createGain();
+
+        src.buffer = buffer;
+        src.loop = true;
+        src.playbackRate.value = playbackRate;
+        gain.gain.value = volume * this.volume;
+
+        src.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        src.start();
+
+        this.activeLoops[name] = { src, gain };
+    }
+
+    // ⛔ STOP LOOP
+    stop(name) {
+        const loop = this.activeLoops[name];
+        if (!loop) return;
+
+        loop.src.stop();
+        loop.src.disconnect();
+        loop.gain.disconnect();
+
+        delete this.activeLoops[name];
+    }
+
     setEnabled(b) {
         this.enabled = b;
+        if (!b) {
+            Object.keys(this.activeLoops).forEach(k => this.stop(k));
+        }
     }
 }

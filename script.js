@@ -19,7 +19,8 @@ async function initSounds() {
     await soundManager.init();
 
     await Promise.all([
-        soundManager.load("drop", "audio/drop.mp3"),
+        soundManager.load("drop", "audio/drop.wav"),
+        soundManager.load("wildcard", "audio/wildcard.wav"),
     ]);
 } window.addEventListener("load", initSounds);
 
@@ -52,6 +53,9 @@ const gameOver = () => {
     board.gameOverFadeOut();
 
     gameOverContainerHTML.classList.remove("show");
+    gameOverContainerHTML.innerHTML = "Game Over!"
+    gameOverContainerHTML.style.fontSize = "56px";
+    gameOverContainerHTML.style.color = "#6E6E73";
     void gameOverContainerHTML.offsetWidth; // restart animation
     gameOverContainerHTML.classList.add("show");
 
@@ -77,6 +81,7 @@ const closeSettings = () => {
 }; document.addEventListener("mousedown", (e) => {if(!settingsWindowHTML.contains(e.target)) closeSettings()});
 
 // fix the failed indication of empty tile holders after game over
-// sounds: drop, button click, gameover, reset
+// fix the combo nullifying error
 
-// storage.clear();
+// sounds: button click, gameover, reset
+
