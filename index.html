@@ -61,6 +61,15 @@
 					</div>
 				</div>
 
+				<div class="option">
+					<div class="name">
+						<span>Empty Indication</span>
+					</div>
+					<div class="set">
+						<input id="emptyindication" class="emptyindication-check check" type="checkbox" checked>
+					</div>
+				</div>
+
 				<div style="cursor: pointer;" onclick="board.requestWildCard()" class="option">
 					<div class="name">
 						<span>Lucky Tile</span>
@@ -71,9 +80,9 @@
 				</div>
 
 				<div style="cursor: pointer;" onclick="{
-					board.gameOverFadeOut();
-					board.reset(); 
-					closeSettings(); 
+						board.gameOverFadeOut();
+						board.reset(); 
+						closeSettings(); 
 					}" class="option">
 					<div class="name">
 						<span>Restart</span>

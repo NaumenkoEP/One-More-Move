@@ -14,7 +14,8 @@ class MemoryManager {
 
         this.options = {
             sounds: this.get("options-sounds"),
-            autograb: this.get("options-autograb")
+            autograb: this.get("options-autograb"),
+            emptyIndication: this.get("options-empty-indication")
         };
     }
     save(key, value){

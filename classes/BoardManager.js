@@ -1,5 +1,6 @@
 class BoardManager {
     constructor(){
+        this.c = 0;
         this.i = 0;
         this.width = size;
         this.height = size;
@@ -44,6 +45,7 @@ class BoardManager {
         this.allowedFailure = 3;
         this.failures;
         this.comboFactor = 1;
+        this.notResetNorGameOver = false;
     }
 
     initHolderGrid() {
@@ -162,6 +164,7 @@ class BoardManager {
         else this.failures = 0;
     }
     reset() {
+        this.notResetNorGameOver = true;
         for(let row = 0; row < this.dimentions; row++){
             for(let col = 0; col < this.dimentions; col++){
                 const tile = this.tileGrid[row][col];
@@ -210,9 +213,8 @@ class BoardManager {
 
         isGameOver = false;
     } 
-    gameOverFadeOut(){
+    async gameOverFadeOut() {
         const center = (this.dimentions - 1) / 2;
-
         const tiles = [];
 
         for (let r = 0; r < this.dimentions; r++) {
@@ -225,12 +227,28 @@ class BoardManager {
             }
         }
 
-        tiles
-            .sort((a, b) => a.dist - b.dist)
-            .forEach(({ tile }, i) => {
-                setTimeout(() => tile.fadeOutAnimation(), i * 50);
+        tiles.sort((a, b) => a.dist - b.dist);
+
+        const fadePromises = tiles.map(({ tile }, i) => {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    tile.fadeOutAnimation().then(resolve);
+                }, i * 50);
             });
+        });
+
+        await Promise.all(fadePromises);
+
+        for (let row of this.holderGrid) {
+            for (let holder of row) {
+                holder.empty = true;
+                holder.indicateEmpty();
+            }
+        }
+        this.notResetNorGameOver = false;
     }
+
+
 
     getHighestValue(){
         const values = new Set();
@@ -505,36 +523,6 @@ class BoardManager {
         requestAnimationFrame(animate);
     }
 
-    getScorePulseSpeed(){
-        const minSpeed = 0.003;
-        const maxSpeed = 0.01;
-        const comboCap = 50;
-
-        const t = Math.min(this.combo, comboCap) / comboCap;
-        const curved = t * t;
-
-        const speed = minSpeed + curved * (maxSpeed - minSpeed);
-        return speed;
-
-    }
-    scorePulseAnmiation() {
-        const center = (this.maxFontSize + this.minFontSize) / 2;
-        const amplitude = (this.maxFontSize - this.minFontSize) / 2;
-
-        const animate = (now) => {
-            if(!this.isAddingScore){
-                const t = (now - this.pulseStartTime) * this.getScorePulseSpeed() + this.pulsePhaseOffset;
-    
-                if(this.score > 100) this.fontSize = center + Math.sin(t) * amplitude;
-                this.renderScore(this.score, this.fontSize);
-            }
-
-            requestAnimationFrame(animate);
-        };
-
-        requestAnimationFrame(animate);
-    }
-
     renderScore(value, fontSize){
 
         sc.fillStyle = this.bgColor;
@@ -596,7 +584,6 @@ class BoardManager {
         storage.save("current-value", this.currentValue);
         this.createPreviewTile(this.currentValue);
     }
-
     // TODO WITH SDK
     requestWildCard(){
         let granted = true;
@@ -649,10 +636,12 @@ class BoardManager {
         }
 
         indicateEmpty(){
-            gc.fillStyle = "#E4E6F1";
-            gc.beginPath();
-            gc.arc(this.x + this.width / 2, this.y + this.height / 2, 5, 0, Math.PI * 2, false);
-            gc.fill();
+            if(emptyIndicationON){
+                gc.fillStyle = "#E4E6F1";
+                gc.beginPath();
+                gc.arc(this.x + this.width / 2, this.y + this.height / 2, 5, 0, Math.PI * 2, false);
+                gc.fill();
+            }
         }
     }
 }

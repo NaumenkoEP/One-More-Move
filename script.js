@@ -38,6 +38,13 @@ const autograbCheckBoxHTML = document.querySelector(".autograb-check");
 if(autograbON) autograbCheckBoxHTML.checked = true;
 else autograbCheckBoxHTML.checked = false;
 
+let emptyIndicationON; const emptyIndication = storage.options.emptyIndication;
+if(emptyIndication !== null) emptyIndicationON = emptyIndication;
+else emptyIndicationON = true;
+const emptyIndicationCheckBoxHTML = document.querySelector(".emptyindication-check");
+if(emptyIndicationON) emptyIndicationCheckBoxHTML.checked = true;
+else emptyIndicationCheckBoxHTML.checked = false;
+
 
 const initNewGame = () => {
     tileCanvas.width = size; tileCanvas.height = board.tileSize + board.previewTileSize / 2;
@@ -49,6 +56,7 @@ const initNewGame = () => {
 const gameOverContainerHTML = document.querySelector(".game-over-container"); let isGameOver = false;
 const gameOver = () => {
     isGameOver = true;
+    board.notResetNorGameOver = true;
 
     board.gameOverFadeOut();
 
@@ -75,12 +83,12 @@ const closeSettings = () => {
 
     soundsON = soundsCheckBoxHTML.checked; storage.save("options-sounds", soundsCheckBoxHTML.checked);
     autograbON = autograbCheckBoxHTML.checked; storage.save("options-autograb", autograbCheckBoxHTML.checked);
+    emptyIndicationON = emptyIndicationCheckBoxHTML.checked; storage.save("options-empty-indication", emptyIndicationCheckBoxHTML.checked);
 
     if (autograbON && board.currentTile && !board.currentTile.dropped) board.currentTile.grab();
 
 }; document.addEventListener("mousedown", (e) => {if(!settingsWindowHTML.contains(e.target)) closeSettings()});
 
-// fix the failed indication of empty tile holders after game over
 // fix the combo nullifying error
 // option to revive when game over by merging or getting rid of the small tiles
 

@@ -227,44 +227,46 @@ class Tile {
 
     }
     fadeOutAnimation() {
-        let w = board.tileSize;
-        let h = board.tileSize;
+        return new Promise(resolve => {
+            let w = board.tileSize;
+            let h = board.tileSize;
 
-        const target = 0;
-        // const speed = isMobile ? 8 : 12;
-        const speed = 2;
+            const target = 0;
+            const speed = 2;
 
-        const cx = this.hoveredHolder.x + board.tileSize / 2;
-        const cy = this.hoveredHolder.y + board.tileSize / 2;
+            const cx = this.hoveredHolder.x + board.tileSize / 2;
+            const cy = this.hoveredHolder.y + board.tileSize / 2;
 
+            const animate = () => {
+                this.hoveredHolder.draw();
 
-        const animate = () => {
-            this.hoveredHolder.draw();
+                w -= speed;
+                h -= speed;
+                this.fontSize -= speed / 2;
 
-            w -= speed;
-            h -= speed;
-            this.fontSize -= speed / 2;
+                if (w <= target) w = target;
+                if (h <= target) h = target;
+                if (this.fontSize < 2) this.fontSize = 0;
 
-            if (w <= target) w = target;
-            if (h <= target) h = target;
-            if (this.fontSize < 2) this.fontSize = 0;
+                this.width = w;
+                this.height = h;
+                this.x = cx - w / 2;
+                this.y = cy - h / 2;
 
-            this.width = w;
-            this.height = h;
-            this.x = cx - w / 2;
-            this.y = cy - h / 2;
+                this.draw(false);
 
-            this.draw(false); // alternative true
+                if (w > target || h > target) {
+                    requestAnimationFrame(animate);
+                } else {
+                    this.hoveredHolder.draw(false);
+                    resolve(); // 🔑 animation is DONE
+                }
+            };
 
-            if (w > target || h > target) {
-                requestAnimationFrame(animate);
-            } else {
-                this.hoveredHolder.draw(false);
-            }
-        };
-
-        requestAnimationFrame(animate);
+            requestAnimationFrame(animate);
+        });
     }
+
 
     display(){
         if(this.value !== "?") this.draw(true);
@@ -285,9 +287,11 @@ class Tile {
     }
 
     grab(){
-        for (let row of board.holderGrid) {
-            for (let holder of row) {
-                if(holder.empty) holder.indicateEmpty();
+        if(!board.notResetNorGameOver){
+            for (let row of board.holderGrid) {
+                for (let holder of row) {
+                    if(holder.empty) holder.indicateEmpty();
+                }
             }
         }
         if(!autograbON) tileCanvas.removeEventListener("click", this._grabListener);
