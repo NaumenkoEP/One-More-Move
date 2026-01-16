@@ -30,6 +30,7 @@ class Tile {
         this.dropped = false;
 
         this.fontSize = 47;
+        if(isMobile) this.fontSize = 44;
         this.fontFamily = board.fontFamily;
         
         this._grabListener = (e) => {
