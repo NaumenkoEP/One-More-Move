@@ -279,7 +279,7 @@ class BoardManager {
         }
         return emptyCells;
     }
-    getTileValue() {        
+   getTileValue() {        
         const highest = Math.max(1, this.getHighestValue());
         const empty = this.getEmptyCells();
         const size = this.dimentions * this.dimentions;
@@ -290,7 +290,7 @@ class BoardManager {
             fullness * 0.4
         );
 
-        if(highest > 3){
+        if (highest > 3) {
             const specialChance = 0.01 + difficulty * 0.02; // 1% → 3%
             if (Math.random() < specialChance) {
                 if (soundsON) soundManager.loop("wildcard");
@@ -298,8 +298,8 @@ class BoardManager {
             }
         }
 
-       
-        let weights = [1, 0.9, 0.7, 0.45, 0.22, 0.12, 0.05];
+        // 🔑 ONLY CHANGE: added weight for value 8
+        let weights = [1, 0.9, 0.7, 0.45, 0.22, 0.12, 0.05, 0.025];
 
         weights = weights.map((w, i) => {
             const value = i + 1;
@@ -319,7 +319,6 @@ class BoardManager {
             return Math.max(0, w * lowDecay + diffBoost);
         });
 
-
         if (empty <= 2 && highest >= 7) {
             weights = weights.map((w, i) => {
                 const value = i + 1;
@@ -332,7 +331,8 @@ class BoardManager {
 
         let total = weights.reduce((a, b) => a + b, 0);
         if (total <= 0 || !isFinite(total)) {
-            weights = [1, 0.8, 0.5, 0.3, 0.12, 0.06, 0.03];
+            // 🔑 fallback also extended to 8
+            weights = [1, 0.8, 0.5, 0.3, 0.12, 0.06, 0.03, 0.015];
             total = weights.reduce((a, b) => a + b, 0);
         }
 
@@ -343,9 +343,9 @@ class BoardManager {
             p -= weights[i];
         }
 
-        console.log("absolute fallback")
         return 1; 
     }
+
 
     createPreviewTile(value) {
         if (this.previewTile) {

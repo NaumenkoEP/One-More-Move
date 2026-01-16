@@ -69,24 +69,6 @@ class Tile {
 
         this.display(true);
     }
-    // static getColor(value){
-    //     let color;
-    //     switch(value) {
-    //         case "1": color = "#BEE3F8"; break;
-    //         case "2": color = "#B4F1CC"; break;
-    //         case "3": color = "#9BE7E0"; break;
-    //         case "4": color = "#FBC4AB"; break;
-    //         case "5": color = "#FFDF8F"; break;
-    //         case "6": color = "#FF9E8F"; break;
-    //         case "7": color = "#F7A1D4"; break;
-    //         case "8": color = "#FF4F8B"; break;
-    //         case "9": color = "#A06BFF"; break;
-    //         case "10": color = "#FFD43B"; break;
-    //         case "?": color = "yellow"; break;
-    //         default: color = "blue";
-    //     }
-    //     return color;
-    // }
 
     static getColor(value){
         let color;
