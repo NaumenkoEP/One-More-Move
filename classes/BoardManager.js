@@ -248,8 +248,6 @@ class BoardManager {
         this.notResetNorGameOver = false;
     }
 
-
-
     getHighestValue(){
         const values = new Set();
 
@@ -279,7 +277,7 @@ class BoardManager {
         }
         return emptyCells;
     }
-   getTileValue() {        
+    getTileValue() {        
         const highest = Math.max(1, this.getHighestValue());
         const empty = this.getEmptyCells();
         const size = this.dimentions * this.dimentions;
@@ -298,7 +296,6 @@ class BoardManager {
             }
         }
 
-        // 🔑 ONLY CHANGE: added weight for value 8
         let weights = [1, 0.9, 0.7, 0.45, 0.22, 0.12, 0.05, 0.025];
 
         weights = weights.map((w, i) => {
@@ -345,7 +342,6 @@ class BoardManager {
 
         return 1; 
     }
-
 
     createPreviewTile(value) {
         if (this.previewTile) {

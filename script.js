@@ -53,8 +53,59 @@ const initNewGame = () => {
     board.initialise();
 }; initNewGame();
 
+const reviveWindowHTML = document.querySelector(".revive-window");
+const settingsOverlayHTML = document.querySelector(".settings-overlay");
+let countInterval;
+let reviveOfferDeclined;
+const offerRevive = () => {
+    reviveOfferDeclined = false;
+    reviveWindowHTML.style.display = "flex";
+    reviveWindowHTML.classList.add("pulse");
+
+    settingsOverlayHTML.style.display = "flex";
+
+    let c = 5;
+    countInterval = setInterval(() => {
+        c--;
+        console.log(c);
+        if(c < 1 || reviveOfferDeclined){
+            clearInterval(countInterval);
+            gameOver();
+        } 
+    }, 1000);
+};
+// TODO WITH SDK
+const requestRevive = () => {
+    clearInterval(countInterval);
+    reviveOfferDeclined = false;
+
+    grantRevive();
+};
+
+const hideReviveWindow = () => {
+    reviveWindowHTML.classList.remove("pulse");
+    reviveWindowHTML.style.display = "none";
+    settingsOverlayHTML.style.display = "none";
+}; 
+document.addEventListener("mousedown", (e) => {
+    if (reviveWindowHTML.style.display !== "flex") return;
+
+    if (!reviveWindowHTML.contains(e.target)) {
+        reviveOfferDeclined = true;
+        clearInterval(countInterval);
+        hideReviveWindow();
+        gameOver();
+    }
+});
+const grantRevive = () => {
+    // FINISH LOGIC
+    hideReviveWindow();
+}
+
 const gameOverContainerHTML = document.querySelector(".game-over-container"); let isGameOver = false;
 const gameOver = () => {
+    hideReviveWindow();
+
     isGameOver = true;
     board.notResetNorGameOver = true;
 
@@ -64,15 +115,15 @@ const gameOver = () => {
     gameOverContainerHTML.innerHTML = "Game Over!"
     gameOverContainerHTML.style.fontSize = "56px";
     gameOverContainerHTML.style.color = "#6E6E73";
-    void gameOverContainerHTML.offsetWidth; // restart animation
+    void gameOverContainerHTML.offsetWidth; 
     gameOverContainerHTML.classList.add("show");
 
     tc.clearRect(0 ,0, tileCanvas.width, tileCanvas.height);
     setTimeout(() => {board.reset()}, 1500);
-};
+}; if(board.getEmptyCells() < 1) gameOver();
+
 
 const settingsWindowHTML = document.querySelector(".settings-window");
-const settingsOverlayHTML = document.querySelector(".settings-overlay");
 const openSettings = () => {
     settingsWindowHTML.style.display = "flex"; 
     settingsOverlayHTML.style.display = "block";
@@ -89,8 +140,10 @@ const closeSettings = () => {
 
 }; document.addEventListener("mousedown", (e) => {if(!settingsWindowHTML.contains(e.target)) closeSettings()});
 
-// fix the combo nullifying error
-// option to revive when game over by merging or getting rid of the small tiles
+// finish grant revive logic
 
 // sounds: button click, gameover, reset
 
+
+// UTILITY TEST
+document.addEventListener("keydown", (e) => { if(e.key === "g") offerRevive() });

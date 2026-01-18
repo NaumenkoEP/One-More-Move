@@ -320,7 +320,6 @@ class Tile {
         let mergeCount = 0;
         const neighbors = [];
 
-        // above
         if (row > 0) {
             const tileAbove = board.tileGrid[row - 1][col];
             if (tileAbove && tileAbove.value === this.value) {
@@ -329,7 +328,6 @@ class Tile {
             }
         }
 
-        // below
         if (row < board.dimentions - 1) {
             const tileBelow = board.tileGrid[row + 1][col];
             if (tileBelow && tileBelow.value === this.value) {
@@ -338,7 +336,6 @@ class Tile {
             }
         }
 
-        // left
         if (col > 0) {
             const tileLeft = board.tileGrid[row][col - 1];
             if (tileLeft && tileLeft.value === this.value) {
@@ -347,7 +344,6 @@ class Tile {
             }
         }
 
-        // right
         if (col < board.dimentions - 1) {
             const tileRight = board.tileGrid[row][col + 1];
             if (tileRight && tileRight.value === this.value) {
@@ -356,7 +352,6 @@ class Tile {
             }
         }
 
-        // Save progress to storage
         const nonCircularValues = Array.from(
             { length: board.dimentions },
             () => Array(board.dimentions).fill(0)
@@ -378,7 +373,7 @@ class Tile {
             
             if (board.failures > 3) board.nulifyCombo();
 
-            if(board.getEmptyCells() < 1) gameOver();
+            if(board.getEmptyCells() < 1) offerRevive();
 
             if (soundsON) soundManager.play("drop", {volume: 0.8});
 
@@ -389,7 +384,6 @@ class Tile {
         board.failures = 0;
         storage.save("failures", 0);
         
-        // Remove neighbors
         for (const n of neighbors) {
             const holder = board.holderGrid[n.r][n.c];
             board.tileGrid[n.r][n.c] = 0;
@@ -397,7 +391,6 @@ class Tile {
             holder.draw();
         }
 
-        // Upgrade value
         this.value = String(Number(this.value) + mergeCount);
 
         const score = Math.floor(Number(((this.value * 2) * mergeCount)) * board.comboFactor);
@@ -408,8 +401,6 @@ class Tile {
 
         if(soundsON) soundManager.play("drop", {playbackRate: 1 + Math.min(board.combo * 0.03, 1.5), volume: 1 });
 
-
-        // Recursive merge (after visual update)
         setTimeout(() => {
             this.checkForMerge();
         }, 20);

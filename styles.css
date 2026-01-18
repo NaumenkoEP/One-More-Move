@@ -173,19 +173,11 @@ body {
     color: #2B2B2B;
 }
 
-
-.close-button {
-    width: 36px;
-    cursor: pointer;
-}
-
-
 .settings-window .container {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
-
 
 .settings-window .option {
     display: flex;
@@ -242,6 +234,54 @@ body {
 
 
 
+.revive-window {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2E2E2E;
+
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+
+    padding: 10px 16px;
+    width: 290px;
+
+    background: #FFFFFF;
+    border-radius: 16px;
+
+    box-shadow: 0 6px 0 rgba(0,0,0,0.08);
+
+    opacity: 0;
+    animation: gameModalIn 0.35s cubic-bezier(.25,1.4,.5,1) forwards;
+
+    z-index: 4;
+}
+
+/* 🔥 Pulse only when revive is active */
+.revive-window.pulse {
+    animation:
+        gameModalIn 0.35s cubic-bezier(.25,1.4,.5,1) forwards,
+        reviveWindowPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes reviveWindowPulse {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        box-shadow: 0 6px 0 rgba(0,0,0,0.08);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.06);
+        box-shadow: 0 10px 0 rgba(0,0,0,0.12);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        box-shadow: 0 6px 0 rgba(0,0,0,0.08);
+    }
+}
 
 
 .game-over-container {
