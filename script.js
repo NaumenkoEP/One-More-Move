@@ -21,6 +21,7 @@ async function initSounds() {
     await Promise.all([
         soundManager.load("drop", "audio/drop.wav"),
         soundManager.load("wildcard", "audio/wildcard.wav"),
+        soundManager.load("chime", "audio/combo-chime-1.wav"),
     ]);
 } window.addEventListener("load", initSounds);
 
@@ -67,7 +68,6 @@ const offerRevive = () => {
     let c = 5;
     countInterval = setInterval(() => {
         c--;
-        console.log(c);
         if(c < 1 || reviveOfferDeclined){
             clearInterval(countInterval);
             gameOver();
@@ -97,10 +97,28 @@ document.addEventListener("mousedown", (e) => {
         gameOver();
     }
 });
-const grantRevive = () => {
-    // FINISH LOGIC
+async function grantRevive() {
+    const tiles = board.tileGrid;
+    const fadePromises = [];
+    for (let row = 0; row < board.dimentions; row++) {
+        for (let col = 0; col < board.dimentions; col++) {
+            const tile = tiles[row][col];
+
+            if (tile && Number(tile.value) < 5) {
+                fadePromises.push(
+                    tile.fadeOutAnimation().then(() => {
+                        tiles[row][col] = 0;
+                        tile.hoveredHolder.empty = true;
+                        tile.hoveredHolder.indicateEmpty();
+                    })
+                );
+            }
+        }
+    }
+    await Promise.all(fadePromises);
     hideReviveWindow();
 }
+
 
 const gameOverContainerHTML = document.querySelector(".game-over-container"); let isGameOver = false;
 const gameOver = () => {
@@ -140,10 +158,8 @@ const closeSettings = () => {
 
 }; document.addEventListener("mousedown", (e) => {if(!settingsWindowHTML.contains(e.target)) closeSettings()});
 
-// finish grant revive logic
-
+// interstitial ads logic
 // sounds: button click, gameover, reset
-
 
 // UTILITY TEST
 document.addEventListener("keydown", (e) => { if(e.key === "g") offerRevive() });

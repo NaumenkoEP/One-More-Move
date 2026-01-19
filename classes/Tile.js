@@ -399,10 +399,63 @@ class Tile {
 
         this.color = Tile.getColor(this.value);
 
-        if(soundsON) soundManager.play("drop", {playbackRate: 1 + Math.min(board.combo * 0.03, 1.5), volume: 1 });
+        // CHIME ON
+        // if (soundsON) {
+        //     const combo = board.combo;
+
+        //     // ---- DROP (stable, satisfying) ----
+        //     const dropPitch =
+        //         1 + Math.tanh(combo * 0.12) * 0.35;
+
+        //     const dropVolume =
+        //         0.9 + Math.min(combo * 0.02, 0.25);
+
+        //     const jitter = (Math.random() - 0.5) * 0.03;
+
+        //     soundManager.play("drop", {
+        //         playbackRate: dropPitch + jitter,
+        //         volume: dropVolume
+        //     });
+
+        //     // ---- CHIME (combo accent, mutates) ----
+        //     if (combo > 1) {
+        //         const pitches = [1, 1.12, 1.26, 1.33, 1.5, 1.68];
+
+        //         const index = combo % pitches.length;
+        //         const chimePitch = pitches[index];
+
+        //         const chimeVolume =
+        //             Math.min(0.4 + combo * 0.04, 0.9);
+
+        //         soundManager.play("chime", {
+        //             playbackRate: chimePitch,
+        //             volume: chimeVolume
+        //         });
+        //     }
+        // }
+
+        
+        // CHIME OFF
+        if (soundsON) {
+            const combo = board.combo;
+
+            const pitch = 1 + Math.tanh(combo * 0.12) * 0.35; // caps ~1.35
+
+            const volume = 0.9 + Math.min(combo * 0.02, 0.25); // caps at 1.15
+
+            const jitter = (Math.random() - 0.5) * 0.03;
+
+            soundManager.play("drop", {
+                playbackRate: pitch + jitter,
+                volume
+            });
+        }
 
         setTimeout(() => {
             this.checkForMerge();
         }, 20);
     }
 }
+
+
+// BACKUP
