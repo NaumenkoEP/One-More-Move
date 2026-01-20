@@ -12,18 +12,7 @@ const headerHTML = document.querySelector(".game-borders .header");
 window.addEventListener("load", () => {headerHTML.style.width = size + "px"});
 
 const storage = new MemoryManager(); const board = new BoardManager();
-
-// FIX ERROR HERE
-const soundManager = new SoundManager(); 
-async function initSounds() {
-    await soundManager.init();
-
-    await Promise.all([
-        soundManager.load("drop", "audio/drop.wav"),
-        soundManager.load("wildcard", "audio/wildcard.wav"),
-        soundManager.load("chime", "audio/combo-chime-1.wav"),
-    ]);
-} window.addEventListener("load", initSounds);
+const soundManager = new SoundManager(); const adManager = new AdManager();
 
 let soundsON; const sounds = storage.options.sounds;
 if(sounds !== null) soundsON = sounds;
@@ -46,6 +35,15 @@ const emptyIndicationCheckBoxHTML = document.querySelector(".emptyindication-che
 if(emptyIndicationON) emptyIndicationCheckBoxHTML.checked = true;
 else emptyIndicationCheckBoxHTML.checked = false;
 
+async function initSounds() {
+    await soundManager.init();
+
+    await Promise.all([
+        soundManager.load("drop", "audio/drop.wav"),
+        soundManager.load("wildcard", "audio/wildcard.wav"),
+        soundManager.load("chime", "audio/combo-chime-1.wav"),
+    ]);
+} window.addEventListener("load", initSounds);
 
 const initNewGame = () => {
     tileCanvas.width = size; tileCanvas.height = board.tileSize + board.previewTileSize / 2;
@@ -81,11 +79,14 @@ const offerRevive = () => {
         }
     }, 1000);
 };
-
-// TODO WITH SDK
 const requestRevive = () => {
     clearInterval(countInterval);
     reviveOfferDeclined = false;
+
+    adManager.showRewardedAd({
+        onSuccess: () => grantRevive(),
+        onFail: () => gameOver()
+    });
 
     grantRevive();
 };
@@ -126,7 +127,6 @@ async function grantRevive() {
     hideReviveWindow();
 }
 
-
 const gameOverContainerHTML = document.querySelector(".game-over-container"); let isGameOver = false;
 const gameOver = () => {
     hideReviveWindow();
@@ -145,6 +145,7 @@ const gameOver = () => {
 
     tc.clearRect(0 ,0, tileCanvas.width, tileCanvas.height);
     setTimeout(() => {board.reset()}, 1500);
+
 }; if(board.getEmptyCells() < 1) gameOver();
 
 
@@ -165,9 +166,8 @@ const closeSettings = () => {
 
 }; document.addEventListener("mousedown", (e) => {if(!settingsWindowHTML.contains(e.target)) closeSettings()});
 
-// interstitial ads logic
 // sounds: button click, gameover, reset
-// finish the tier on the revive window 
+// finish the timer on the revive window 
 
 // UTILITY TEST
 document.addEventListener("keydown", (e) => { if(e.key === "g") offerRevive() });

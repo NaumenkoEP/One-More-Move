@@ -212,6 +212,8 @@ class BoardManager {
         this.renderScore(0, this.fontSize);
 
         isGameOver = false;
+
+        adManager.onGameOver(!reviveOfferDeclined);
     } 
     async gameOverFadeOut() {
         const center = (this.dimentions - 1) / 2;
@@ -580,12 +582,15 @@ class BoardManager {
         storage.save("current-value", this.currentValue);
         this.createPreviewTile(this.currentValue);
     }
-    // TODO WITH SDK
     requestWildCard(){
-        let granted = true;
-        if(granted) this.grantWildCard();
-        else console.log("no tile for you");
-
+        const self = this;
+        adManager.showRewardedAd({
+            onSuccess: () => self.grantWildCard(),
+            onFail: () => {
+                closeSettings();
+                return;
+            }
+        });
         closeSettings();
     }
 
