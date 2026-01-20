@@ -55,25 +55,33 @@ const initNewGame = () => {
 }; initNewGame();
 
 const reviveWindowHTML = document.querySelector(".revive-window");
+const reviveButtonHTML = document.querySelector(".revive-button");
 const settingsOverlayHTML = document.querySelector(".settings-overlay");
+const timerHTML = reviveWindowHTML.querySelector(".timer");
 let countInterval;
 let reviveOfferDeclined;
 const offerRevive = () => {
     reviveOfferDeclined = false;
-    reviveWindowHTML.style.display = "flex";
-    reviveWindowHTML.classList.add("pulse");
 
+    reviveWindowHTML.style.display = "flex";
+    reviveButtonHTML.classList.add("pulse");
     settingsOverlayHTML.style.display = "flex";
 
     let c = 5;
+    timerHTML.textContent = c;
+
     countInterval = setInterval(() => {
         c--;
-        if(c < 1 || reviveOfferDeclined){
+        timerHTML.innerHTML = c;
+
+        if (c < 1 || reviveOfferDeclined) {
             clearInterval(countInterval);
+            hideReviveWindow();
             gameOver();
-        } 
+        }
     }, 1000);
 };
+
 // TODO WITH SDK
 const requestRevive = () => {
     clearInterval(countInterval);
@@ -81,12 +89,11 @@ const requestRevive = () => {
 
     grantRevive();
 };
-
 const hideReviveWindow = () => {
-    reviveWindowHTML.classList.remove("pulse");
+    reviveButtonHTML.classList.remove("pulse");
     reviveWindowHTML.style.display = "none";
     settingsOverlayHTML.style.display = "none";
-}; 
+};
 document.addEventListener("mousedown", (e) => {
     if (reviveWindowHTML.style.display !== "flex") return;
 
@@ -160,6 +167,7 @@ const closeSettings = () => {
 
 // interstitial ads logic
 // sounds: button click, gameover, reset
+// finish the tier on the revive window 
 
 // UTILITY TEST
 document.addEventListener("keydown", (e) => { if(e.key === "g") offerRevive() });
