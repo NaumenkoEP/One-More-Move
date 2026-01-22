@@ -56,33 +56,73 @@ const reviveWindowHTML = document.querySelector(".revive-window");
 const reviveButtonHTML = document.querySelector(".revive-button");
 const settingsOverlayHTML = document.querySelector(".settings-overlay");
 const timerHTML = reviveWindowHTML.querySelector(".timer");
-let countInterval;
-let reviveOfferDeclined;
+let reviveOfferDeclined = false; let reviveRafId = null;
 const offerRevive = () => {
-    reviveOfferDeclined = false;
-
     reviveWindowHTML.style.display = "flex";
     reviveButtonHTML.classList.add("pulse");
     settingsOverlayHTML.style.display = "flex";
 
-    let c = 5;
-    timerHTML.textContent = c;
+    const timerCanvas = document.querySelector(".timer-canvas");
+    const ctx = timerCanvas.getContext("2d");
 
-    countInterval = setInterval(() => {
-        c--;
-        timerHTML.innerHTML = c;
+    const size = 290;
+    timerCanvas.width = size;
+    timerCanvas.height = size;
 
-        if (c < 1 || reviveOfferDeclined) {
-            clearInterval(countInterval);
+    const duration = 5000; // 5 seconds
+    const startTime = performance.now();
+
+    const radius = 100;
+    const center = size / 2;
+    const fullCircle = Math.PI * 2;
+
+    const draw = (now) => {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        ctx.clearRect(0, 0, size, size);
+
+        // background circle
+        ctx.strokeStyle = "#F3F4F6";
+        ctx.lineWidth = 15;
+        ctx.beginPath();
+        ctx.arc(center, center, radius, 0, fullCircle);
+        ctx.stroke();
+
+        // foreground circle
+        // ctx.strokeStyle = " #6E6E73";
+        ctx.strokeStyle = " #4FC9B0";
+        ctx.beginPath();
+        ctx.arc(
+            center,
+            center,
+            radius,
+            -Math.PI / 2,
+            -Math.PI / 2 + fullCircle * (1 - progress)
+        );
+        ctx.stroke();
+
+        // number
+        const secondsLeft = Math.ceil((duration - elapsed) / 1000);
+        ctx.fillStyle = "#2E2E2E";
+        ctx.font = `45px ${board.fontFamily}`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(Math.max(secondsLeft, 0), center, center);
+
+        if (progress < 1 && !reviveOfferDeclined) {
+            reviveRafId = requestAnimationFrame(draw);
+        } else {
             hideReviveWindow();
             gameOver();
         }
-    }, 1000);
+    };
+
+    reviveRafId = requestAnimationFrame(draw);
 };
 const requestRevive = () => {
-    clearInterval(countInterval);
-    reviveOfferDeclined = false;
-
+    stopReviveTimer();
+    
     adManager.showRewardedAd({
         onSuccess: () => grantRevive(),
         onFail: () => gameOver()
@@ -90,21 +130,6 @@ const requestRevive = () => {
 
     grantRevive();
 };
-const hideReviveWindow = () => {
-    reviveButtonHTML.classList.remove("pulse");
-    reviveWindowHTML.style.display = "none";
-    settingsOverlayHTML.style.display = "none";
-};
-document.addEventListener("mousedown", (e) => {
-    if (reviveWindowHTML.style.display !== "flex") return;
-
-    if (!reviveWindowHTML.contains(e.target)) {
-        reviveOfferDeclined = true;
-        clearInterval(countInterval);
-        hideReviveWindow();
-        gameOver();
-    }
-});
 async function grantRevive() {
     const tiles = board.tileGrid;
     const fadePromises = [];
@@ -127,6 +152,29 @@ async function grantRevive() {
     hideReviveWindow();
 }
 
+const stopReviveTimer = () => {
+    reviveOfferDeclined = true;
+
+    if (reviveRafId !== null) {
+        cancelAnimationFrame(reviveRafId);
+        reviveRafId = null;
+    }
+};
+const hideReviveWindow = () => {
+    reviveButtonHTML.classList.remove("pulse");
+    reviveWindowHTML.style.display = "none";
+    settingsOverlayHTML.style.display = "none";
+};
+document.addEventListener("mousedown", (e) => {
+    if (reviveWindowHTML.style.display !== "flex") return;
+
+    if (!reviveWindowHTML.contains(e.target)) {
+        stopReviveTimer();
+        hideReviveWindow();
+        gameOver();
+    }
+});
+
 const gameOverContainerHTML = document.querySelector(".game-over-container"); let isGameOver = false;
 const gameOver = () => {
     hideReviveWindow();
@@ -144,7 +192,16 @@ const gameOver = () => {
     gameOverContainerHTML.classList.add("show");
 
     tc.clearRect(0 ,0, tileCanvas.width, tileCanvas.height);
-    setTimeout(() => {board.reset()}, 1500);
+    setTimeout(() => {
+        board.reset();
+
+        for (let row of board.holderGrid) {
+            for (let holder of row) {
+                holder.empty = true;
+                holder.indicateEmpty();
+            }
+        }
+    }, 1500);
 
 }; if(board.getEmptyCells() < 1) gameOver();
 
@@ -165,9 +222,4 @@ const closeSettings = () => {
     if (autograbON && board.currentTile && !board.currentTile.dropped) board.currentTile.grab();
 
 }; document.addEventListener("mousedown", (e) => {if(!settingsWindowHTML.contains(e.target)) closeSettings()});
-
 // sounds: button click, gameover, reset
-// finish the timer on the revive window 
-
-// UTILITY TEST
-document.addEventListener("keydown", (e) => { if(e.key === "g") offerRevive() });

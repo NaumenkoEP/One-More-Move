@@ -180,9 +180,8 @@ class BoardManager {
             "current-value",
             "next-value"
         ];
-        for(let i = 0; i < consumables.length; i++){
-            storage.nullify(consumables[i]);
-        }
+        for(let i = 0; i < consumables.length; i++) storage.nullify(consumables[i]);
+        
 
         this.tileGrid = Array.from({ length: this.dimentions }, () =>
             Array(this.dimentions).fill(0)
@@ -247,6 +246,7 @@ class BoardManager {
                 holder.indicateEmpty();
             }
         }
+        
         this.notResetNorGameOver = false;
     }
 
