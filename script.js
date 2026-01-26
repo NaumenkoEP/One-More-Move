@@ -42,6 +42,7 @@ async function initSounds() {
         soundManager.load("drop", "audio/drop.wav"),
         soundManager.load("wildcard", "audio/wildcard.wav"),
         soundManager.load("chime", "audio/combo-chime-1.wav"),
+        soundManager.load("click", "audio/ui-click.wav"),
     ]);
 } window.addEventListener("load", initSounds);
 
@@ -129,6 +130,8 @@ const requestRevive = () => {
     });
 
     grantRevive();
+
+    if (soundsON) soundManager.play("click");
 };
 async function grantRevive() {
     const tiles = board.tileGrid;
@@ -164,6 +167,7 @@ const hideReviveWindow = () => {
     reviveButtonHTML.classList.remove("pulse");
     reviveWindowHTML.style.display = "none";
     settingsOverlayHTML.style.display = "none";
+
 };
 document.addEventListener("mousedown", (e) => {
     if (reviveWindowHTML.style.display !== "flex") return;
@@ -172,6 +176,8 @@ document.addEventListener("mousedown", (e) => {
         stopReviveTimer();
         hideReviveWindow();
         gameOver();
+
+        if (soundsON) soundManager.play("click");
     }
 });
 
@@ -207,9 +213,14 @@ const gameOver = () => {
 
 
 const settingsWindowHTML = document.querySelector(".settings-window");
+let settingsOpen = false;
 const openSettings = () => {
     settingsWindowHTML.style.display = "flex"; 
     settingsOverlayHTML.style.display = "block";
+
+    settingsOpen = true;
+    
+    if (soundsON) soundManager.play("click");
 }
 const closeSettings = () => {
     settingsWindowHTML.style.display = "none";
@@ -221,5 +232,10 @@ const closeSettings = () => {
 
     if (autograbON && board.currentTile && !board.currentTile.dropped) board.currentTile.grab();
 
-}; document.addEventListener("mousedown", (e) => {if(!settingsWindowHTML.contains(e.target)) closeSettings()});
-// sounds: button click, gameover, reset
+    settingsOpen = false;
+
+    if (soundsON) soundManager.play("click");
+}; document.addEventListener("mousedown", (e) => {if(!settingsWindowHTML.contains(e.target) && settingsOpen) closeSettings()});
+// sounds: gameover, reset
+// fix the animation dependancie on battery level
+// try to optimise the algorithm for late game (less low value tiles)

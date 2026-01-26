@@ -5,7 +5,7 @@ class Tile {
         this.isWildCard;
         if(this.value === "?") this.isWildCard = true;
         else this.isWildCard = false;
-        if (this.isWildCard) {
+        if (this.isWildCard && soundsON) {
             soundManager.stop("wildcard");
             soundManager.loop("wildcard", {playbackRate: 0.3});
         }
@@ -283,9 +283,8 @@ class Tile {
     drop(){
         if(isGameOver) return;
 
-        if (soundsON) {
-            if (this.isWildCard) soundManager.stop("wildcard");
-        } 
+        if (soundsON) if (this.isWildCard) soundManager.stop("wildcard");
+         
         
         this.dropped = true;
 
@@ -433,8 +432,6 @@ class Tile {
         //         });
         //     }
         // }
-
-        
         // CHIME OFF
         if (soundsON) {
             const combo = board.combo;

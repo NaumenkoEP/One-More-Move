@@ -48,7 +48,7 @@
 						<span>Sounds</span>
 					</div>
 					<div class="set">
-						<input id="sounds" class="sounds-check check" type="checkbox" checked>
+						<input onclick="if (soundsON) soundManager.play('click')" id="sounds" class="sounds-check check" type="checkbox" checked>
 					</div>
 				</div>
 
@@ -57,7 +57,7 @@
 						<span>Auto Grab</span>
 					</div>
 					<div class="set">
-						<input id="autograb" class="autograb-check check" type="checkbox" checked>
+						<input onclick="if (soundsON) soundManager.play('click')" id="autograb" class="autograb-check check" type="checkbox" checked>
 					</div>
 				</div>
 
@@ -66,7 +66,7 @@
 						<span>Empty Indication</span>
 					</div>
 					<div class="set">
-						<input id="emptyindication" class="emptyindication-check check" type="checkbox" checked>
+						<input onclick="if (soundsON) soundManager.play('click')" id="emptyindication" class="emptyindication-check check" type="checkbox" checked>
 					</div>
 				</div>
 
@@ -80,9 +80,10 @@
 				</div>
 
 				<div style="cursor: pointer;" onclick="{
-						board.gameOverFadeOut();
-						board.reset(); 
-						closeSettings(); 
+						board.gameOverFadeOut()
+						board.reset()
+						closeSettings() 
+						if (soundsON) soundManager.play('click')
 					}" class="option">
 					<div class="name">
 						<span>Restart</span>

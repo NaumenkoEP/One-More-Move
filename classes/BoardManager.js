@@ -290,6 +290,7 @@ class BoardManager {
             fullness * 0.4
         );
 
+        // wildcard chance
         if (highest > 3) {
             const specialChance = 0.01 + difficulty * 0.02; // 1% → 3%
             if (Math.random() < specialChance) {
@@ -298,6 +299,7 @@ class BoardManager {
             }
         }
 
+        // base weights up to 8
         let weights = [1, 0.9, 0.7, 0.45, 0.22, 0.12, 0.05, 0.025];
 
         weights = weights.map((w, i) => {
@@ -318,19 +320,17 @@ class BoardManager {
             return Math.max(0, w * lowDecay + diffBoost);
         });
 
+        // pressure boost when board is tight
         if (empty <= 2 && highest >= 7) {
             weights = weights.map((w, i) => {
                 const value = i + 1;
-
                 if (value <= highest) return w * 1.6;
-
                 return w;
             });
         }
 
         let total = weights.reduce((a, b) => a + b, 0);
         if (total <= 0 || !isFinite(total)) {
-            // 🔑 fallback also extended to 8
             weights = [1, 0.8, 0.5, 0.3, 0.12, 0.06, 0.03, 0.015];
             total = weights.reduce((a, b) => a + b, 0);
         }
@@ -338,12 +338,27 @@ class BoardManager {
         let p = Math.random() * total;
 
         for (let i = 0; i < weights.length; i++) {
-            if (p < weights[i]) return i + 1;
+            if (p < weights[i]) {
+                let value = i + 1;
+
+                // 🟢 OPTION A: late-game soft auto-promotion
+                if (
+                    value <= 3 &&
+                    fullness > 0.75 &&
+                    difficulty > 0.65 &&
+                    Math.random() < 0.35
+                ) {
+                    value = Math.min(value + 2, highest);
+                }
+
+                return value;
+            }
             p -= weights[i];
         }
 
         return 1; 
     }
+
 
     createPreviewTile(value) {
         if (this.previewTile) {
