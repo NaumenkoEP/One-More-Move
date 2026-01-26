@@ -11,6 +11,8 @@ const scoreCanvas = document.querySelector(".score-canvas"); const sc = scoreCan
 const headerHTML = document.querySelector(".game-borders .header");
 window.addEventListener("load", () => {headerHTML.style.width = size + "px"});
 
+const now = () => { return performance.now(); }
+
 const storage = new MemoryManager(); const board = new BoardManager();
 const soundManager = new SoundManager(); const adManager = new AdManager();
 
@@ -237,5 +239,3 @@ const closeSettings = () => {
     if (soundsON) soundManager.play("click");
 }; document.addEventListener("mousedown", (e) => {if(!settingsWindowHTML.contains(e.target) && settingsOpen) closeSettings()});
 // sounds: gameover, reset
-// fix the animation dependancie on battery level
-// try to optimise the algorithm for late game (less low value tiles)

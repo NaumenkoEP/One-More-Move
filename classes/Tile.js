@@ -138,6 +138,7 @@ class Tile {
             );
         }
     }
+
     wildCardAnimation(){
         let counter = 0;
         const values = [];
@@ -175,29 +176,34 @@ class Tile {
         }, 450);
     }
     appearAnimation() {
-        let w = 0;
-        let h = 0;
-
         const target = board.tileSize;
-        const growthSpeed = isMobile ? 10 : target / 8;
 
-        const animate = () => {
-            w += growthSpeed;
-            h += growthSpeed;
+        let startTime = now();
+        const duration = 150; // ms (tweakable)
 
-            if (w >= target) w = target;
-            if (h >= target) h = target;
+        const cx = this.hoveredHolder.x + target / 2;
+        const cy = this.hoveredHolder.y + target / 2;
 
-            this.width = w;
-            this.height = h;
-            this.x = this.hoveredHolder.x + (target - w) / 2;
-            this.y = this.hoveredHolder.y + (target - h) / 2;
+        const animate = (t) => {
+            const elapsed = Math.min(t - startTime, duration);
+            const progress = elapsed / duration;
 
-            this.draw(w === target);
+            // Ease-out (snappy but smooth)
+            const eased = 1 - Math.pow(1 - progress, 3);
 
-            if (w < target || h < target) {
+            const size = target * eased;
+
+            this.width = size;
+            this.height = size;
+            this.x = cx - size / 2;
+            this.y = cy - size / 2;
+
+            this.draw(progress >= 1);
+
+            if (progress < 1) {
                 requestAnimationFrame(animate);
             } else {
+                // snap to exact final state
                 this.width = target;
                 this.height = target;
                 this.x = this.hoveredHolder.x;
@@ -207,48 +213,53 @@ class Tile {
         };
 
         requestAnimationFrame(animate);
-
     }
     fadeOutAnimation() {
         return new Promise(resolve => {
-            let w = board.tileSize;
-            let h = board.tileSize;
+            const startTime = now();
+            const duration = 800; // ms
 
-            const target = 0;
-            const speed = 2;
+            const startSize = board.tileSize;
+            const startFont = this.fontSize;
 
-            const cx = this.hoveredHolder.x + board.tileSize / 2;
-            const cy = this.hoveredHolder.y + board.tileSize / 2;
+            const cx = this.hoveredHolder.x + startSize / 2;
+            const cy = this.hoveredHolder.y + startSize / 2;
 
-            const animate = () => {
+            const animate = (t) => {
+                const elapsed = Math.min(t - startTime, duration);
+                const progress = elapsed / duration;
+
+                // Ease-in (feels more "vanish-y")
+                const eased = Math.pow(1 - progress, 2);
+
+                const size = startSize * eased;
+
                 this.hoveredHolder.draw();
 
-                w -= speed;
-                h -= speed;
-                this.fontSize -= speed / 2;
+                this.width = size;
+                this.height = size;
+                this.fontSize = Math.max(0, startFont * eased);
 
-                if (w <= target) w = target;
-                if (h <= target) h = target;
-                if (this.fontSize < 2) this.fontSize = 0;
-
-                this.width = w;
-                this.height = h;
-                this.x = cx - w / 2;
-                this.y = cy - h / 2;
+                this.x = cx - size / 2;
+                this.y = cy - size / 2;
 
                 this.draw(false);
 
-                if (w > target || h > target) {
+                if (progress < 1) {
                     requestAnimationFrame(animate);
                 } else {
+                    this.width = 0;
+                    this.height = 0;
+                    this.fontSize = 0;
                     this.hoveredHolder.draw(false);
-                    resolve(); // 🔑 animation is DONE
+                    resolve();
                 }
             };
 
             requestAnimationFrame(animate);
         });
     }
+
 
 
     display(){
