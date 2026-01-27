@@ -11,7 +11,7 @@ const scoreCanvas = document.querySelector(".score-canvas"); const sc = scoreCan
 const headerHTML = document.querySelector(".game-borders .header");
 window.addEventListener("load", () => {headerHTML.style.width = size + "px"});
 
-const now = () => { return performance.now(); }
+const now = () => { return window.performance.now(); };
 
 const storage = new MemoryManager(); const board = new BoardManager();
 const soundManager = new SoundManager(); const adManager = new AdManager();
@@ -45,6 +45,7 @@ async function initSounds() {
         soundManager.load("wildcard", "audio/wildcard.wav"),
         soundManager.load("chime", "audio/combo-chime-1.wav"),
         soundManager.load("click", "audio/ui-click.wav"),
+        soundManager.load("game-over", "audio/game-over.wav")
     ]);
 } window.addEventListener("load", initSounds);
 
@@ -211,6 +212,7 @@ const gameOver = () => {
         }
     }, 1500);
 
+    if (soundsON) soundManager.play("game-over");
 }; if(board.getEmptyCells() < 1) gameOver();
 
 
@@ -238,4 +240,3 @@ const closeSettings = () => {
 
     if (soundsON) soundManager.play("click");
 }; document.addEventListener("mousedown", (e) => {if(!settingsWindowHTML.contains(e.target) && settingsOpen) closeSettings()});
-// sounds: gameover, reset
