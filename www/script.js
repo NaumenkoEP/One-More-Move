@@ -132,8 +132,6 @@ const requestRevive = () => {
         onFail: () => gameOver()
     });
 
-    grantRevive();
-
     if (soundsON) soundManager.play("click");
 };
 async function grantRevive() {
@@ -143,7 +141,7 @@ async function grantRevive() {
         for (let col = 0; col < board.dimentions; col++) {
             const tile = tiles[row][col];
 
-            if (tile && Number(tile.value) < 5) {
+            if (tile && Number(tile.value) < 7) {
                 fadePromises.push(
                     tile.fadeOutAnimation().then(() => {
                         tiles[row][col] = 0;
