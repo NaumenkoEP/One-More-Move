@@ -39,10 +39,8 @@ class AdManager {
     }
     // TODO WITH SDK
     showInterstitial() {
-        console.log("Showing interstitial ad");
     }
     // TODO WITH SDK
     showRewardedAd({ onSuccess, onFail } = {}) {
-        console.log("Showing rewarded ad");
     }
 }

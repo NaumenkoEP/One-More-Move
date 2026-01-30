@@ -5,27 +5,32 @@ class SoundManager {
         this.enabled = true;
         this.volume = 1;
         this.unlocked = false;
-
-        this.activeLoops = {}; // 🔑 track looping sounds
+        this.activeLoops = {};
     }
 
-    async init() {
-        if (this.ctx) return;
+    async unlock() {
+        if (this.unlocked) return;
 
-        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)({
+            sampleRate: 44100
+        });
+        // 🔑 REAL unlock sound (required by iOS)
+        const buffer = this.ctx.createBuffer(1, 1, 22050);
+        const source = this.ctx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(this.ctx.destination);
+        source.start(0);
 
-        const unlock = () => {
-            if (this.ctx.state !== "running") {
-                this.ctx.resume();
-            }
-            this.unlocked = true;
-            document.removeEventListener("pointerdown", unlock);
-        };
+        if (this.ctx.state !== "running") {
+            await this.ctx.resume();
+        }
 
-        document.addEventListener("pointerdown", unlock);
+        this.unlocked = this.ctx.state === "running";
     }
 
     async load(name, url) {
+        if (!this.unlocked) return;
+        
         const res = await fetch(url);
         const arrayBuffer = await res.arrayBuffer();
         this.buffers[name] = await this.ctx.decodeAudioData(arrayBuffer);
@@ -49,10 +54,9 @@ class SoundManager {
         src.start();
     }
 
-    // 🔁 LOOPING SOUND
     loop(name, { volume = 1, playbackRate = 1 } = {}) {
         if (!this.enabled || !this.unlocked) return;
-        if (this.activeLoops[name]) return; // already looping
+        if (this.activeLoops[name]) return;
 
         const buffer = this.buffers[name];
         if (!buffer) return;
@@ -67,13 +71,11 @@ class SoundManager {
 
         src.connect(gain);
         gain.connect(this.ctx.destination);
-
         src.start();
 
         this.activeLoops[name] = { src, gain };
     }
 
-    // ⛔ STOP LOOP
     stop(name) {
         const loop = this.activeLoops[name];
         if (!loop) return;
@@ -81,7 +83,6 @@ class SoundManager {
         loop.src.stop();
         loop.src.disconnect();
         loop.gain.disconnect();
-
         delete this.activeLoops[name];
     }
 

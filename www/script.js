@@ -37,8 +37,8 @@ const emptyIndicationCheckBoxHTML = document.querySelector(".emptyindication-che
 if(emptyIndicationON) emptyIndicationCheckBoxHTML.checked = true;
 else emptyIndicationCheckBoxHTML.checked = false;
 
-async function initSounds() {
-    await soundManager.init();
+async function initSoundsOnce() {
+    await soundManager.unlock();
 
     await Promise.all([
         soundManager.load("drop", "audio/drop.wav"),
@@ -47,7 +47,9 @@ async function initSounds() {
         soundManager.load("click", "audio/ui-click.wav"),
         soundManager.load("game-over", "audio/game-over.wav")
     ]);
-} window.addEventListener("load", initSounds);
+}; ["touchstart", "mousedown", "keydown", "load"].forEach(event => {
+    document.addEventListener(event, initSoundsOnce, { once: true });
+});
 
 const initNewGame = () => {
     tileCanvas.width = size; tileCanvas.height = board.tileSize + board.previewTileSize / 2;
